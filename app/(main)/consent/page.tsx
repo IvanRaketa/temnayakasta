@@ -3,11 +3,13 @@ import type { Metadata } from "next";
 import { LegalDocument, LegalList, LegalSection } from "@/components/legal/legal-document";
 import { LEGAL_DOCUMENTS } from "@/lib/legal/documents";
 import {
+  CROSS_BORDER_PROCESSING_NOTICE,
   LEGAL_OPERATOR,
   PERSONAL_DATA_ACTIONS,
   PERSONAL_DATA_CATEGORIES,
   PERSONAL_DATA_PROCESSING_PURPOSE,
   PERSONAL_DATA_STORAGE_TERM,
+  PRODUCTION_INFRASTRUCTURE,
 } from "@/lib/legal/operator";
 import { projectConfig } from "@/lib/project";
 
@@ -69,7 +71,14 @@ export default function ConsentPage() {
         <p>{PERSONAL_DATA_STORAGE_TERM}</p>
       </LegalSection>
 
-      <LegalSection title="7. Отзыв согласия">
+      <LegalSection title="7. Инфраструктура обработки">
+        <p>{PRODUCTION_INFRASTRUCTURE.application}</p>
+        <p>{PRODUCTION_INFRASTRUCTURE.database}</p>
+        <p>{CROSS_BORDER_PROCESSING_NOTICE.statement}</p>
+        <p>{CROSS_BORDER_PROCESSING_NOTICE.legalReview}</p>
+      </LegalSection>
+
+      <LegalSection title="8. Отзыв согласия">
         <p>
           Пользователь может отозвать согласие, направив обращение оператору по email{" "}
           <a className="text-primary hover:underline" href={`mailto:${LEGAL_OPERATOR.email}`}>

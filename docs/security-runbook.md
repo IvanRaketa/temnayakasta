@@ -1,19 +1,26 @@
 # Security runbook
 
-## Direct-host baseline
+## Production baseline
 
-Текущий production-режим — direct-host: Next.js слушает `0.0.0.0:3000`. Это accepted deployment choice, но не полноценная perimeter-защита.
+Текущий production размещается на Vercel, а рабочая PostgreSQL-база — в Neon. Cloudflare,
+Cloudflare Tunnel, локальный Windows-хост и порт `3000` не являются текущим публичным production
+контуром.
 
-Без доверенного reverse proxy оставляйте:
+Production-секреты должны храниться только в Vercel environment variables. Строки подключения Neon,
+SMTP-пароли, ключи и токены нельзя коммитить в репозиторий или включать в документацию.
+
+Для production на Vercel используются:
 
 ```dotenv
-TRUST_PROXY="false"
-ENABLE_HSTS="false"
+APP_URL="https://www.temnayakasta120.ru"
+TRUST_PROXY="true"
+ENABLE_HSTS="true"
 ```
 
-`TRUST_PROXY="true"` допустим только после настройки proxy/CDN, который перезаписывает proxy headers, а не просто передаёт пользовательские `X-Forwarded-For`, `X-Real-IP` или `CF-Connecting-IP`.
+Значения должны быть сверены с фактическими настройками проекта Vercel. Не следует фиксировать IP
+Vercel или Neon как постоянный: для платформенной инфраструктуры указываются провайдеры и домены.
 
-## Manual Windows checks
+## CI and deployment checks
 
 ```powershell
 npm run env:check
@@ -22,9 +29,10 @@ npm run build
 npm run security:audit
 npm run security:audit:high
 npm run security:tools
-Get-NetTCPConnection -State Listen -LocalPort 3000
-Get-NetFirewallRule | Where-Object DisplayName -like "*3000*"
 ```
+
+Эти команды должны выполняться в Vercel/CI после push. Локальный запуск не требуется для
+документарных правок.
 
 `npm run security:tools` не сканирует проект сам. Он только показывает, установлены ли optional tools: gitleaks, semgrep, snyk и trivy.
 
@@ -40,13 +48,13 @@ Recommended policy:
 - test restore into a separate database, never over the live DB without approval;
 - do not delete or move existing real backups without explicit owner approval.
 
-## Optional future controls
+## Optional controls
 
 These require separate approval and infrastructure work:
 
-- HTTPS and reverse proxy in front of `0.0.0.0:3000`;
-- Windows Firewall tightening or network ACL changes;
-- Cloudflare, WAF managed rules, bot/rate-limit rules;
+- проверка HTTPS и редиректов всех публичных доменов на основной canonical-домен;
+- проверка настроек доверенных proxy-заголовков в Vercel;
+- platform/WAF/rate-limit controls, доступные в используемом тарифе Vercel;
 - HSTS enablement;
 - database cleanup jobs and indexes for long-term view/rate-limit retention;
 - major dependency upgrades.

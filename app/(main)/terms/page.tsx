@@ -4,9 +4,10 @@ import Link from "next/link";
 import { LegalDocument, LegalSection } from "@/components/legal/legal-document";
 import { LEGAL_DOCUMENTS } from "@/lib/legal/documents";
 import {
-  CLOUDFLARE_TRANSFER,
+  CROSS_BORDER_PROCESSING_NOTICE,
   LEGAL_OPERATOR,
   PERSONAL_DATA_PROCESSING_PURPOSE,
+  PRODUCTION_INFRASTRUCTURE,
   PUBLIC_CONTENT_NOTICE,
 } from "@/lib/legal/operator";
 import { projectConfig } from "@/lib/project";
@@ -14,7 +15,7 @@ import { projectConfig } from "@/lib/project";
 export const metadata: Metadata = {
   title: { absolute: "Пользовательское соглашение — Тёмная Каста" },
   description:
-    "Пользовательское соглашение сайта Тёмная Каста: правила аккаунта, публикаций, модерации, персональных данных и Cloudflare.",
+    "Пользовательское соглашение сайта Тёмная Каста: правила аккаунта, публикаций, модерации, персональных данных и инфраструктуры.",
   alternates: { canonical: LEGAL_DOCUMENTS.terms.href },
 };
 
@@ -118,20 +119,19 @@ export default function TermsPage() {
           рекламы.
         </p>
         <p>
-          На сайте может работать внутренняя баннерная реклама. Рекламные материалы маркируются
-          словом «Реклама», а при наличии данных также указывают рекламодателя и erid.
+          На сайте предусмотрен технический каркас для внутренних рекламных блоков (AdSlot).
+          Наличие такого каркаса не означает, что подключена активная рекламная сеть или идёт
+          действующая рекламная кампания. При фактическом размещении рекламы материалы должны
+          маркироваться в соответствии с применимыми требованиями.
         </p>
       </LegalSection>
 
-      <LegalSection title="8. Cloudflare и доступность">
+      <LegalSection title="8. Инфраструктура и доступность">
+        <p>{PRODUCTION_INFRASTRUCTURE.application}</p>
+        <p>{PRODUCTION_INFRASTRUCTURE.database}</p>
         <p>
-          Сайт может использовать Cloudflare для защиты, DNS, HTTPS/TLS, CDN/proxy, маршрутизации и
-          доставки запросов к сайту. Использование Cloudflare помогает защищать сайт от DDoS-атак и
-          вредоносного трафика, а также повышать доступность, устойчивость и безопасность сайта.
-        </p>
-        <p>
-          При использовании Cloudflare может осуществляться трансграничная передача технических
-          данных: {CLOUDFLARE_TRANSFER.categories}.
+          {CROSS_BORDER_PROCESSING_NOTICE.statement} Возможные категории данных: {" "}
+          {CROSS_BORDER_PROCESSING_NOTICE.categories}.
         </p>
       </LegalSection>
 

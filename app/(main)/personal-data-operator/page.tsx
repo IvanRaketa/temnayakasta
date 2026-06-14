@@ -3,16 +3,16 @@ import type { Metadata } from "next";
 import { LegalDocument, LegalSection } from "@/components/legal/legal-document";
 import { LEGAL_DOCUMENTS } from "@/lib/legal/documents";
 import {
-  CLOUDFLARE_TRANSFER,
+  CROSS_BORDER_PROCESSING_NOTICE,
   getLegalOperatorInfo,
-  RUSSIAN_DATABASE_LOCATION,
+  PRODUCTION_INFRASTRUCTURE,
 } from "@/lib/legal/operator";
 import { projectConfig } from "@/lib/project";
 
 export const metadata: Metadata = {
   title: { absolute: "Сведения об операторе персональных данных — Тёмная Каста" },
   description:
-    "Сведения об операторе персональных данных сайта Тёмная Каста, доменах, базе данных в РФ и Cloudflare.",
+    "Сведения об операторе персональных данных сайта Тёмная Каста, доменах и инфраструктуре Vercel и Neon.",
   alternates: { canonical: LEGAL_DOCUMENTS.personalDataOperator.href },
 };
 
@@ -41,25 +41,22 @@ export default function PersonalDataOperatorPage() {
       <LegalSection title="Сайт и домены">
         <p>Название сайта: «{projectConfig.name}».</p>
         <p>Основной домен: {projectConfig.domain}.</p>
-        <p>Дополнительные домены: {projectConfig.domains.join(", ")}.</p>
+        <p>
+          Дополнительные домены: {" "}
+          {projectConfig.domains.filter((domain) => domain !== projectConfig.domain).join(", ")}.
+        </p>
       </LegalSection>
 
-      <LegalSection title={RUSSIAN_DATABASE_LOCATION.title}>
-        <p>{RUSSIAN_DATABASE_LOCATION.statement}</p>
-        <p>{RUSSIAN_DATABASE_LOCATION.infrastructure}</p>
-        <p>{RUSSIAN_DATABASE_LOCATION.address}.</p>
+      <LegalSection title={PRODUCTION_INFRASTRUCTURE.title}>
+        <p>{PRODUCTION_INFRASTRUCTURE.application}</p>
+        <p>{PRODUCTION_INFRASTRUCTURE.database}</p>
+        <p>{PRODUCTION_INFRASTRUCTURE.network}</p>
       </LegalSection>
 
-      <LegalSection title={CLOUDFLARE_TRANSFER.title}>
-        <p>Сайт использует Cloudflare для: {CLOUDFLARE_TRANSFER.services}.</p>
-        <p>
-          В связи с использованием Cloudflare может осуществляться трансграничная передача
-          технических данных.
-        </p>
-        <p>
-          Получатель: {CLOUDFLARE_TRANSFER.recipient}, {CLOUDFLARE_TRANSFER.address}
-        </p>
-        <p>Страна: {CLOUDFLARE_TRANSFER.country}.</p>
+      <LegalSection title={CROSS_BORDER_PROCESSING_NOTICE.title}>
+        <p>Инфраструктурные провайдеры: {CROSS_BORDER_PROCESSING_NOTICE.providers}.</p>
+        <p>{CROSS_BORDER_PROCESSING_NOTICE.statement}</p>
+        <p>{CROSS_BORDER_PROCESSING_NOTICE.legalReview}</p>
       </LegalSection>
 
       <LegalSection title="Роскомнадзор">
@@ -76,8 +73,7 @@ export default function PersonalDataOperatorPage() {
       <LegalSection title="Публичность сведений">
         <p>
           На сайте публикуются только необходимые публичные данные оператора: ФИО, тип оператора,
-          адрес, email, телефон, домены, сведения о базе данных в Российской Федерации и информация
-          об использовании Cloudflare.
+          адрес, email, телефон, домены и общие сведения об используемой облачной инфраструктуре.
         </p>
       </LegalSection>
     </LegalDocument>

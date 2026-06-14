@@ -21,6 +21,10 @@ export default function ContactsPage() {
         <p>Оператор персональных данных: {LEGAL_OPERATOR.name}.</p>
         <p>Тип оператора: {LEGAL_OPERATOR.type}.</p>
         <p>Адрес оператора: {LEGAL_OPERATOR.address}.</p>
+        <p>
+          Основной адрес сайта: {projectConfig.url}. Дополнительные домены: {" "}
+          {projectConfig.domains.filter((domain) => domain !== projectConfig.domain).join(", ")}.
+        </p>
       </LegalSection>
 
       <LegalSection title="Связь">

@@ -1,6 +1,12 @@
-# Запуск Тёмной Касты на Windows 11 в direct-host режиме
+# Архив: запуск Тёмной Касты на Windows 11 в direct-host режиме
 
-Этот runbook описывает текущий production-режим: сайт запускается напрямую с Windows-хоста, а Next.js слушает `0.0.0.0:3000`. Cloudflare Tunnel сейчас не используется.
+> **Legacy/local scenario.** Этот документ сохранён только как архив старого локального сценария.
+> Текущий production размещается на Vercel, а PostgreSQL — в Neon. Cloudflare Tunnel и
+> Windows-хост не являются текущей production-инфраструктурой. Актуальная схема описана в
+> `docs/production-vercel-neon.md`.
+
+Ниже описан прежний direct-host сценарий: сайт запускался с Windows-хоста, а Next.js слушал
+`0.0.0.0:3000`. Эти инструкции нельзя использовать как описание текущего production.
 
 Домены:
 

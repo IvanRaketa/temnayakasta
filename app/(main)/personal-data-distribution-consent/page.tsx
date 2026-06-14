@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 
 import { LegalDocument, LegalSection } from "@/components/legal/legal-document";
 import { LEGAL_DOCUMENTS } from "@/lib/legal/documents";
-import { LEGAL_OPERATOR, PUBLIC_CONTENT_NOTICE } from "@/lib/legal/operator";
+import {
+  CROSS_BORDER_PROCESSING_NOTICE,
+  LEGAL_OPERATOR,
+  PRODUCTION_INFRASTRUCTURE,
+  PUBLIC_CONTENT_NOTICE,
+} from "@/lib/legal/operator";
 import { projectConfig } from "@/lib/project";
 
 export const metadata: Metadata = {
@@ -50,7 +55,13 @@ export default function PersonalDataDistributionConsentPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="4. Срок действия и отзыв">
+      <LegalSection title="4. Техническая публикация материалов">
+        <p>{PRODUCTION_INFRASTRUCTURE.application}</p>
+        <p>{PRODUCTION_INFRASTRUCTURE.database}</p>
+        <p>{CROSS_BORDER_PROCESSING_NOTICE.statement}</p>
+      </LegalSection>
+
+      <LegalSection title="5. Срок действия и отзыв">
         <p>
           Согласие действует до удаления соответствующих публичных материалов, удаления аккаунта,
           отзыва согласия, прекращения работы сайта либо прекращения необходимости обработки, если

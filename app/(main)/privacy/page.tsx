@@ -3,21 +3,21 @@ import type { Metadata } from "next";
 import { LegalDocument, LegalList, LegalSection } from "@/components/legal/legal-document";
 import { LEGAL_DOCUMENTS } from "@/lib/legal/documents";
 import {
-  CLOUDFLARE_TRANSFER,
+  CROSS_BORDER_PROCESSING_NOTICE,
   LEGAL_OPERATOR,
   PERSONAL_DATA_CATEGORIES,
   PERSONAL_DATA_PROCESSING_PURPOSE,
   PERSONAL_DATA_SECURITY_MEASURES,
   PERSONAL_DATA_STORAGE_TERM,
+  PRODUCTION_INFRASTRUCTURE,
   PUBLIC_CONTENT_NOTICE,
-  RUSSIAN_DATABASE_LOCATION,
 } from "@/lib/legal/operator";
 import { projectConfig } from "@/lib/project";
 
 export const metadata: Metadata = {
   title: { absolute: "Политика конфиденциальности — Тёмная Каста" },
   description:
-    "Политика конфиденциальности сайта Тёмная Каста: оператор, домены, цели обработки, Cloudflare и защита данных.",
+    "Политика конфиденциальности сайта Тёмная Каста: оператор, домены, цели обработки, Vercel, Neon и защита данных.",
   alternates: { canonical: LEGAL_DOCUMENTS.privacy.href },
 };
 
@@ -87,25 +87,18 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title={RUSSIAN_DATABASE_LOCATION.title}>
-        <p>{RUSSIAN_DATABASE_LOCATION.statement}</p>
-        <p>{RUSSIAN_DATABASE_LOCATION.infrastructure}</p>
-        <p>{RUSSIAN_DATABASE_LOCATION.address}.</p>
+      <LegalSection title={PRODUCTION_INFRASTRUCTURE.title}>
+        <p>{PRODUCTION_INFRASTRUCTURE.application}</p>
+        <p>{PRODUCTION_INFRASTRUCTURE.database}</p>
+        <p>{PRODUCTION_INFRASTRUCTURE.network}</p>
       </LegalSection>
 
-      <LegalSection title={CLOUDFLARE_TRANSFER.title}>
-        <p>Сайт использует Cloudflare для: {CLOUDFLARE_TRANSFER.services}.</p>
-        <p>
-          В связи с использованием Cloudflare может осуществляться трансграничная передача
-          технических данных.
-        </p>
-        <p>
-          Получатель: {CLOUDFLARE_TRANSFER.recipient}, {CLOUDFLARE_TRANSFER.address}
-        </p>
-        <p>Страна: {CLOUDFLARE_TRANSFER.country}.</p>
-        <p>Цель передачи: {CLOUDFLARE_TRANSFER.purpose}.</p>
-        <p>Категории данных при такой передаче: {CLOUDFLARE_TRANSFER.categories}.</p>
-        <p>{CLOUDFLARE_TRANSFER.proxyNotice}</p>
+      <LegalSection title={CROSS_BORDER_PROCESSING_NOTICE.title}>
+        <p>Инфраструктурные провайдеры: {CROSS_BORDER_PROCESSING_NOTICE.providers}.</p>
+        <p>{CROSS_BORDER_PROCESSING_NOTICE.statement}</p>
+        <p>Цели обработки: {CROSS_BORDER_PROCESSING_NOTICE.purpose}.</p>
+        <p>Возможные категории данных: {CROSS_BORDER_PROCESSING_NOTICE.categories}.</p>
+        <p>{CROSS_BORDER_PROCESSING_NOTICE.legalReview}</p>
       </LegalSection>
 
       <LegalSection title="9. Сроки обработки и удаление">
@@ -128,7 +121,7 @@ export default function PrivacyPage() {
           не используются.
         </p>
         <p>
-          Для защиты соединения с сайтом применяется HTTPS/TLS, в том числе через сервис Cloudflare.
+          Для защиты соединения с сайтом применяется HTTPS/TLS на платформе размещения.
         </p>
       </LegalSection>
     </LegalDocument>

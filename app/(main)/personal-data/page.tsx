@@ -4,7 +4,7 @@ import Link from "next/link";
 import { LegalDocument, LegalList, LegalSection } from "@/components/legal/legal-document";
 import { LEGAL_DOCUMENTS } from "@/lib/legal/documents";
 import {
-  CLOUDFLARE_TRANSFER,
+  CROSS_BORDER_PROCESSING_NOTICE,
   LEGAL_OPERATOR,
   PERSONAL_DATA_ACTIONS,
   PERSONAL_DATA_CATEGORIES,
@@ -13,15 +13,15 @@ import {
   PERSONAL_DATA_SECURITY_MEASURES,
   PERSONAL_DATA_STORAGE_TERM,
   PERSONAL_DATA_SUBJECT_CATEGORIES,
+  PRODUCTION_INFRASTRUCTURE,
   PUBLIC_CONTENT_NOTICE,
-  RUSSIAN_DATABASE_LOCATION,
 } from "@/lib/legal/operator";
 import { projectConfig } from "@/lib/project";
 
 export const metadata: Metadata = {
   title: { absolute: "Политика обработки персональных данных — Тёмная Каста" },
   description:
-    "Политика обработки персональных данных пользователей сайта Тёмная Каста: оператор, цели, основания, категории данных, база в РФ и Cloudflare.",
+    "Политика обработки персональных данных пользователей сайта Тёмная Каста: оператор, цели, категории данных, Vercel и Neon.",
   alternates: { canonical: LEGAL_DOCUMENTS.personalData.href },
 };
 
@@ -88,25 +88,18 @@ export default function PersonalDataPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title={RUSSIAN_DATABASE_LOCATION.title}>
-        <p>{RUSSIAN_DATABASE_LOCATION.statement}</p>
-        <p>{RUSSIAN_DATABASE_LOCATION.infrastructure}</p>
-        <p>{RUSSIAN_DATABASE_LOCATION.address}.</p>
+      <LegalSection title={PRODUCTION_INFRASTRUCTURE.title}>
+        <p>{PRODUCTION_INFRASTRUCTURE.application}</p>
+        <p>{PRODUCTION_INFRASTRUCTURE.database}</p>
+        <p>{PRODUCTION_INFRASTRUCTURE.network}</p>
       </LegalSection>
 
-      <LegalSection title={CLOUDFLARE_TRANSFER.title}>
-        <p>Сайт использует Cloudflare для: {CLOUDFLARE_TRANSFER.services}.</p>
-        <p>
-          В связи с использованием Cloudflare может осуществляться трансграничная передача
-          технических данных.
-        </p>
-        <p>
-          Получатель: {CLOUDFLARE_TRANSFER.recipient}, {CLOUDFLARE_TRANSFER.address}
-        </p>
-        <p>Страна: {CLOUDFLARE_TRANSFER.country}.</p>
-        <p>Цель передачи: {CLOUDFLARE_TRANSFER.purpose}.</p>
-        <p>Категории данных при такой передаче: {CLOUDFLARE_TRANSFER.categories}.</p>
-        <p>{CLOUDFLARE_TRANSFER.proxyNotice}</p>
+      <LegalSection title={CROSS_BORDER_PROCESSING_NOTICE.title}>
+        <p>Инфраструктурные провайдеры: {CROSS_BORDER_PROCESSING_NOTICE.providers}.</p>
+        <p>{CROSS_BORDER_PROCESSING_NOTICE.statement}</p>
+        <p>Цели обработки: {CROSS_BORDER_PROCESSING_NOTICE.purpose}.</p>
+        <p>Возможные категории данных: {CROSS_BORDER_PROCESSING_NOTICE.categories}.</p>
+        <p>{CROSS_BORDER_PROCESSING_NOTICE.legalReview}</p>
       </LegalSection>
 
       <LegalSection title="10. Сроки обработки">
@@ -123,7 +116,7 @@ export default function PersonalDataPage() {
           не используются.
         </p>
         <p>
-          Для защиты соединения с сайтом применяется HTTPS/TLS, в том числе через сервис Cloudflare.
+          Для защиты соединения с сайтом применяется HTTPS/TLS на платформе размещения.
         </p>
       </LegalSection>
 

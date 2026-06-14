@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 
 import { LegalDocument, LegalSection } from "@/components/legal/legal-document";
 import { LEGAL_DOCUMENTS } from "@/lib/legal/documents";
+import {
+  CROSS_BORDER_PROCESSING_NOTICE,
+  PRODUCTION_INFRASTRUCTURE,
+} from "@/lib/legal/operator";
 
 export const metadata: Metadata = {
   title: { absolute: "Согласие на email-уведомления — Тёмная Каста" },
@@ -37,6 +41,12 @@ export default function EmailConsentPage() {
           Факт согласия фиксируется при регистрации вместе с userId, типом согласия, версией
           документа, датой и временем, IP-адресом и user-agent, если эти сведения доступны серверу.
         </p>
+      </LegalSection>
+
+      <LegalSection title="Техническая инфраструктура">
+        <p>{PRODUCTION_INFRASTRUCTURE.application}</p>
+        <p>{PRODUCTION_INFRASTRUCTURE.database}</p>
+        <p>{CROSS_BORDER_PROCESSING_NOTICE.statement}</p>
       </LegalSection>
 
       <LegalSection title="Маркетинговые письма">
