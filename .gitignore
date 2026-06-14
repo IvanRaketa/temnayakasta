@@ -9,11 +9,13 @@ out
 dist
 coverage
 .env
+.env.*
 .env.local
 .env.production
 .env.development
 .env*.local
 !.env.example
+neon-env.txt
 lib/generated
 *.tsbuildinfo
 *.log
