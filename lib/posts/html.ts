@@ -19,6 +19,15 @@ const POST_HTML_ALLOWED_TAGS = [
   "img",
 ];
 
+function isAllowedPostImageSrc(src: string) {
+  try {
+    const url = new URL(src.trim());
+    return url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export function sanitizePostHtml(html: string): string {
   return sanitizeHtml(html, {
     allowedTags: POST_HTML_ALLOWED_TAGS,
@@ -26,15 +35,15 @@ export function sanitizePostHtml(html: string): string {
       img: ["src", "alt", "title", "class"],
       code: ["class"],
     },
-    allowedSchemes: ["http", "https"],
+    allowedSchemes: ["https"],
     allowedSchemesByTag: {
-      img: ["http", "https"],
+      img: ["https"],
     },
     allowProtocolRelative: false,
     exclusiveFilter(frame) {
       if (frame.tag === "img") {
         const src = String(frame.attribs.src ?? "");
-        return src.startsWith("data:") || !src.startsWith("/uploads/posts/");
+        return !isAllowedPostImageSrc(src);
       }
 
       return false;
