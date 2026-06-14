@@ -4,9 +4,9 @@
 
 - веб-приложение размещается на Vercel;
 - рабочая PostgreSQL-база размещается в Neon;
-- основной публичный и canonical-адрес: `https://www.temnayakasta120.ru`;
-- дополнительные домены: `temnayakasta120.ru`, `www.temnayakasta120.online` и
-  `temnayakasta120.online`; они должны перенаправлять на основной адрес;
+- основной публичный и canonical-адрес: `https://temnayakasta120.online`;
+- дополнительные домены: `www.temnayakasta120.online`, `temnayakasta120.ru` и
+  `www.temnayakasta120.ru`; они могут перенаправлять на основной адрес после настройки DNS;
 - Cloudflare, Cloudflare Tunnel, домашний компьютер и локальный PostgreSQL не входят в текущий
   production-контур.
 
@@ -36,7 +36,7 @@ TODO для ручной юридической проверки: сверить
 ## Проверки после push
 
 1. Дождаться успешного Vercel deployment и выполнения build/lint/Prisma-проверок в CI.
-2. Проверить canonical, sitemap и robots на `https://www.temnayakasta120.ru`.
+2. Проверить canonical, sitemap и robots на `https://temnayakasta120.online`.
 3. Проверить HTTPS и редиректы всех дополнительных доменов на основной.
 4. Проверить наличие обязательных Vercel environment variables без вывода их значений.
 5. Проверить подключение приложения к Neon и отсутствие локальных/Cloudflare-зависимостей.

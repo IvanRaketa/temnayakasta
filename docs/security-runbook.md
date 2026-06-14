@@ -12,7 +12,7 @@ SMTP-пароли, ключи и токены нельзя коммитить в
 Для production на Vercel используются:
 
 ```dotenv
-APP_URL="https://www.temnayakasta120.ru"
+APP_URL="https://temnayakasta120.online"
 TRUST_PROXY="true"
 ENABLE_HSTS="true"
 ```
