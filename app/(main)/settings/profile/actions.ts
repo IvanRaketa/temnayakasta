@@ -168,7 +168,7 @@ export async function updateProfileAction(
     const avatar = await saveAvatar(avatarFile).catch((error) => {
       console.error("[settings/profile] Avatar upload failed", error);
       return {
-        error: "Не удалось сохранить аватар. Подробности есть в консоли сервера.",
+        error: "Максимальный размер аватара — 2 МБ.",
         reason: "avatar_write_failed",
       };
     });
