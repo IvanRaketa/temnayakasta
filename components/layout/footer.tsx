@@ -48,7 +48,11 @@ export function Footer() {
           <Link href="/contacts" className="hover:text-primary">
             Контакты
           </Link>
-          <span>{projectConfig.domains.join(" / ")}</span>
+          <span>
+            {projectConfig.domains
+              .filter((domain) => !domain.startsWith("www."))
+              .join(" / ")}
+          </span>
         </nav>
       </div>
     </footer>
