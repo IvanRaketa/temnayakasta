@@ -51,7 +51,7 @@ export async function GET(
       headers: {
         "Content-Type": contentType,
         "Content-Length": String(file.length),
-        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Cache-Control": "public, max-age=31536000, immutable",
       },
     });
   } catch {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { unstable_cache } from "next/cache";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -39,13 +40,20 @@ function formatNumber(value: number) {
   }).format(value);
 }
 
+const getCachedHomeCounts = unstable_cache(
+  async () =>
+    Promise.all([
+      db.post.count({ where: { status: PostStatus.PUBLISHED } }),
+      db.comment.count({ where: { status: CommentStatus.PUBLISHED } }),
+      db.postView.count(),
+    ]),
+  ["home-public-counts"],
+  { revalidate: 30 },
+);
+
 async function getHomeStats() {
   const pulse = presenceStore.snapshot("site").pulse;
-  const [posts, comments, views] = await Promise.all([
-    db.post.count({ where: { status: PostStatus.PUBLISHED } }),
-    db.comment.count({ where: { status: CommentStatus.PUBLISHED } }),
-    db.postView.count(),
-  ]);
+  const [posts, comments, views] = await getCachedHomeCounts();
 
   return {
     online: pulse.usersOnline,

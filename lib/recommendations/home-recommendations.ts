@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+
 import { db } from "@/lib/db";
 import { PostStatus, UserInterestEventType, type Prisma } from "@/lib/generated/prisma/client";
 
@@ -383,8 +385,7 @@ function diversify(scoredPosts: ScoredPost[], limit: number) {
   return selected;
 }
 
-export async function getHomeRecommendations(userId?: string | null, limit = DEFAULT_LIMIT) {
-  const safeLimit = Math.max(1, Math.min(limit, 20));
+async function createHomeRecommendations(userId: string | null | undefined, limit: number) {
   const [candidatePosts, profile] = await Promise.all([
     loadCandidatePosts(userId),
     userId ? loadInterestProfile(userId) : Promise.resolve<InterestProfile | undefined>(undefined),
@@ -395,8 +396,24 @@ export async function getHomeRecommendations(userId?: string | null, limit = DEF
       : undefined;
   const scoredPosts = candidatePosts.map((post) => scorePost(post, effectiveProfile));
 
-  return diversify(scoredPosts, safeLimit).map<HomeRecommendation>((item) => ({
+  return diversify(scoredPosts, limit).map<HomeRecommendation>((item) => ({
     post: item.post,
     reason: item.reason,
   }));
+}
+
+const getCachedGuestHomeRecommendations = unstable_cache(
+  async (limit: number) => createHomeRecommendations(undefined, limit),
+  ["guest-home-recommendations"],
+  { revalidate: 30 },
+);
+
+export async function getHomeRecommendations(userId?: string | null, limit = DEFAULT_LIMIT) {
+  const safeLimit = Math.max(1, Math.min(limit, 20));
+
+  if (!userId) {
+    return getCachedGuestHomeRecommendations(safeLimit);
+  }
+
+  return createHomeRecommendations(userId, safeLimit);
 }

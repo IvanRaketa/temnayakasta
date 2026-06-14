@@ -59,23 +59,12 @@ export default async function PopularPage({
     },
   });
 
-  const likeCounts = posts.length
-    ? await db.reaction.groupBy({
-        by: ["postId"],
-        where: {
-          postId: { in: posts.map((post) => post.id) },
-          type: ReactionType.LIKE,
-        },
-        _count: { _all: true },
-      })
-    : [];
-  const likesByPostId = new Map(
-    likeCounts.flatMap((item) => (item.postId ? [[item.postId, item._count._all] as const] : [])),
-  );
-
   const ranked = posts
     .map((post) => {
-      const likes = likesByPostId.get(post.id) ?? 0;
+      const likes = post.reactions.reduce(
+        (count, reaction) => count + (reaction.type === ReactionType.LIKE ? 1 : 0),
+        0,
+      );
       const score = likes * 3 + post._count.comments * 2 + post._count.views;
       return { ...post, score };
     })

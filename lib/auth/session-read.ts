@@ -1,11 +1,12 @@
 import { cookies } from "next/headers";
+import { cache } from "react";
 
 import { SESSION_COOKIE_NAME } from "@/lib/auth/session-cookie";
 import { hashSessionToken } from "@/lib/auth/session-token";
 import { db } from "@/lib/db";
 import { UserStatus } from "@/lib/generated/prisma/client";
 
-export async function getCurrentSessionReadOnly() {
+export const getCurrentSessionReadOnly = cache(async function getCurrentSessionReadOnly() {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
@@ -27,4 +28,4 @@ export async function getCurrentSessionReadOnly() {
   }
 
   return { session, user: session.user };
-}
+});

@@ -11,6 +11,9 @@ const noStoreHeaders = [
   { key: "Pragma", value: "no-cache" },
   { key: "Expires", value: "0" },
 ];
+const immutableUploadHeaders = [
+  { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+];
 const csp = [
   "default-src 'self'",
   `script-src ${scriptSrc.join(" ")}`,
@@ -71,6 +74,10 @@ const nextConfig: NextConfig = {
         source,
         headers: noStoreHeaders,
       })),
+      {
+        source: "/uploads/:path*",
+        headers: immutableUploadHeaders,
+      },
     ];
   },
   reactStrictMode: true,

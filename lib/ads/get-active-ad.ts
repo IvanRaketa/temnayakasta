@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+
 import { db } from "@/lib/db";
 import { type AdPlacement, type Prisma } from "@/lib/generated/prisma/client";
 
@@ -37,13 +39,20 @@ export function activeAdvertisementWhere(now = new Date()): Prisma.Advertisement
   };
 }
 
+const getCachedActiveAd = unstable_cache(
+  async (placement: AdPlacement) =>
+    db.advertisement.findFirst({
+      where: {
+        placement,
+        ...activeAdvertisementWhere(),
+      },
+      orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
+      select: activeAdvertisementSelect,
+    }),
+  ["active-advertisement"],
+  { revalidate: 30 },
+);
+
 export async function getActiveAd(placement: AdPlacement) {
-  return db.advertisement.findFirst({
-    where: {
-      placement,
-      ...activeAdvertisementWhere(),
-    },
-    orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
-    select: activeAdvertisementSelect,
-  });
+  return getCachedActiveAd(placement);
 }

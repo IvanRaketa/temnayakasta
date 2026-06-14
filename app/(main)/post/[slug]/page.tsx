@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { cache } from "react";
 import { CalendarDays, Eye, FilePenLine, Home, Trash2 } from "lucide-react";
 
 import { deletePostAction } from "@/app/(main)/post/[slug]/actions";
@@ -49,7 +50,7 @@ interface PostPageProps {
   params: Promise<{ slug: string }>;
 }
 
-async function getPost(slug: string) {
+const getPost = cache(async function getPost(slug: string) {
   const id = getPostIdFromPublicSlug(slug);
 
   return db.post.findUnique({
@@ -93,7 +94,7 @@ async function getPost(slug: string) {
       },
     },
   });
-}
+});
 
 async function getComments(postId: string, viewerId?: string, viewerCanModerate = false) {
   return db.comment.findMany({
@@ -337,8 +338,10 @@ export default async function PostPage({ params }: PostPageProps) {
     viewerId: current?.user.id,
     headers: await headers(),
   });
-  const viewCount = await db.postView.count({ where: { postId: post.id } });
-  const comments = await getComments(post.id, current?.user.id, canModerate(current?.user));
+  const [viewCount, comments] = await Promise.all([
+    db.postView.count({ where: { postId: post.id } }),
+    getComments(post.id, current?.user.id, canModerate(current?.user)),
+  ]);
   const commentTree = buildCommentTree(comments, current?.user.id);
   const currentUser = current ? toDiscussionUser(current.user) : null;
   const postReactions = createReactionSummary(post.reactions, current?.user.id);
