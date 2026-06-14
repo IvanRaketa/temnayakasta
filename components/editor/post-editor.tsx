@@ -95,6 +95,19 @@ function ToolbarButton({
   );
 }
 
+function getDirectHttpsImageUrl(value: string) {
+  const trimmedValue = value.trim();
+
+  try {
+    const url = new URL(trimmedValue);
+    if (url.protocol !== "https:") return null;
+    if (!/\.(?:png|jpe?g|webp|gif)$/iu.test(url.pathname)) return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
 function PublishingSkeleton() {
   return (
     <section className="tk-glass rounded-lg p-4 md:p-5" aria-live="polite">
@@ -306,6 +319,25 @@ export function PostEditor({ initialPost }: { initialPost?: PostEditorInitialPos
     setDirty(true);
   }, []);
 
+  const insertImageUrl = useCallback(() => {
+    if (!editor) return;
+
+    const value = window.prompt("Вставьте прямую HTTPS-ссылку на изображение");
+    if (value === null) return;
+
+    const imageUrl = getDirectHttpsImageUrl(value);
+    if (!imageUrl) {
+      const message = "Укажите прямую HTTPS-ссылку на изображение PNG, JPG, WebP или GIF.";
+      setStatus(message);
+      setToast({ type: "error", message });
+      return;
+    }
+
+    editor.chain().focus().setImage({ src: imageUrl, alt: "Изображение" }).run();
+    setStatus("Изображение вставлено по ссылке");
+    setDirty(true);
+  }, [editor]);
+
   const insertImageFile = useCallback(
     async (file: File) => {
       if (!editor) return;
@@ -316,6 +348,7 @@ export function PostEditor({ initialPost }: { initialPost?: PostEditorInitialPos
 
       if (!result.ok || !result.imageUrl) {
         setStatus(result.message);
+        setToast({ type: "error", message: result.message });
         return;
       }
 
@@ -495,7 +528,7 @@ export function PostEditor({ initialPost }: { initialPost?: PostEditorInitialPos
         >
           <Minus className="size-4" />
         </ToolbarButton>
-        <ToolbarButton label="Изображение" onClick={() => fileInputRef.current?.click()}>
+        <ToolbarButton label="Изображение по URL" onClick={insertImageUrl}>
           <ImagePlus className="size-4" />
         </ToolbarButton>
         <div className="relative">
@@ -522,7 +555,7 @@ export function PostEditor({ initialPost }: { initialPost?: PostEditorInitialPos
         </div>
       </div>
     );
-  }, [editor, emojiOpen, onEmojiClick]);
+  }, [editor, emojiOpen, insertImageUrl, onEmojiClick]);
 
   return (
     <div className="space-y-5" onDrop={onDrop} onDragOver={(event) => event.preventDefault()}>
@@ -682,7 +715,7 @@ export function PostEditor({ initialPost }: { initialPost?: PostEditorInitialPos
           </p>
           <p className="text-xs leading-5">
             Публикуя пост, изображения и теги, вы соглашаетесь с их доступностью другим
-            пользователям и посетителям сайта.{" "}
+            пользователям и посетителям сайта. {" "}
             <NextLink
               href={LEGAL_DOCUMENTS.personalDataDistributionConsent.href}
               className="text-primary hover:underline"
