@@ -1,8 +1,6 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
 
 import { headers } from "next/headers";
 import { unstable_rethrow } from "next/navigation";
@@ -21,12 +19,11 @@ import { sanitizePostHtml } from "@/lib/posts/html";
 import { createLatinSlug, getPostPublicSlug } from "@/lib/posts/urls";
 import { enforceRateLimit, rateLimitRules } from "@/lib/security/rate-limit";
 import { MAX_TAGS_PER_POST, normalizeTags } from "@/lib/tags/normalize";
-import { validateImageUpload } from "@/lib/uploads/image-validation";
 
 const TITLE_MAX_LENGTH = 160;
 const CONTENT_MAX_LENGTH = 120_000;
-const IMAGE_MAX_SIZE = 5 * 1024 * 1024;
-const allowedImageTypes = new Set(["jpg", "png", "webp", "gif"] as const);
+const POST_IMAGE_UPLOAD_DISABLED_NOTICE =
+  "Загрузка изображений на сайт отключена. Загрузите фото на внешний сервис и вставьте прямую HTTPS-ссылку.";
 
 export interface SavePostInput {
   postId?: string;
@@ -75,7 +72,7 @@ async function createPostSecurityEvent(input: {
       userId: input.userId,
       ip: context.ip,
       userAgent: context.userAgent,
-      type: SecurityEventType.SPAM_ATTEMPT,
+      type: SecurityEventType.SUSPICIOUS_ACTIVITY,
       severity: SecuritySeverity.MEDIUM,
       metadata: {
         route: input.route,
@@ -284,7 +281,7 @@ export async function savePostAction(input: SavePostInput): Promise<PostEditorAc
   }
 }
 
-export async function uploadPostImageAction(formData: FormData): Promise<PostEditorActionResult> {
+export async function uploadPostImageAction(_formData: FormData): Promise<PostEditorActionResult> {
   const { current, error } = await getVerifiedSessionForAction("/create/image", "POST");
   if (!current) return { ok: false, message: error };
 
@@ -299,53 +296,8 @@ export async function uploadPostImageAction(formData: FormData): Promise<PostEdi
   });
   if (!limit.ok) return { ok: false, message: limit.message };
 
-  const file = formData.get("file");
-
-  if (!(file instanceof File)) {
-    return { ok: false, message: "Файл не найден." };
-  }
-
-  const image = await validateImageUpload({
-    file,
-    maxSizeBytes: IMAGE_MAX_SIZE,
-    allowedExtensions: allowedImageTypes,
-  });
-
-  if (!image.ok) {
-    await db.securityEvent.create({
-      data: {
-        userId: current.user.id,
-        ip: context.ip,
-        userAgent: context.userAgent,
-        type: SecurityEventType.SUSPICIOUS_ACTIVITY,
-        severity: SecuritySeverity.MEDIUM,
-        metadata: {
-          route: context.route,
-          fileType: file.type,
-          fileSize: file.size,
-          reason: `post_${image.reason}`,
-        },
-      },
-    });
-    return {
-      ok: false,
-      message:
-        image.reason === "file_too_large"
-          ? "Размер изображения не должен превышать 5 МБ."
-          : "Поддерживаются JPG, PNG, WebP и GIF без SVG/скриптов.",
-    };
-  }
-
-  const uploadDir = path.join(process.cwd(), "public", "uploads", "posts");
-  const fileName = `${randomUUID()}.${image.extension}`;
-  const filePath = path.join(uploadDir, fileName);
-
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(filePath, image.bytes);
-
   return {
-    ok: true,
-    message: "Изображение загружено.",
-    imageUrl: `/uploads/posts/${fileName}`,
+    ok: false,
+    message: POST_IMAGE_UPLOAD_DISABLED_NOTICE,
   };
 }
