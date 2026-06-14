@@ -5,8 +5,8 @@
 - веб-приложение размещается на Vercel;
 - рабочая PostgreSQL-база размещается в Neon;
 - основной публичный и canonical-адрес: `https://temnayakasta120.online`;
-- дополнительные домены: `www.temnayakasta120.online`, `temnayakasta120.ru` и
-  `www.temnayakasta120.ru`; они могут перенаправлять на основной адрес после настройки DNS;
+- дополнительный домен: `temnayakasta120.ru`; он может перенаправлять на основной адрес после
+  настройки DNS;
 - Cloudflare, Cloudflare Tunnel, домашний компьютер и локальный PostgreSQL не входят в текущий
   production-контур.
 
