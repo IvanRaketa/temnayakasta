@@ -20,6 +20,9 @@ import { LEGAL_DOCUMENTS } from "@/lib/legal/documents";
 import { PREMIUM_NAME_EFFECTS, normalizePremiumNameEffect } from "@/lib/premium";
 import { cn } from "@/lib/utils";
 
+const AVATAR_MAX_SIZE = 1 * 1024 * 1024;
+const AVATAR_ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+
 interface ProfileSettingsFormProps {
   user: {
     username: string;
@@ -48,6 +51,7 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
     initialState,
   );
   const [preview, setPreview] = useState<string | null>(null);
+  const [avatarClientError, setAvatarClientError] = useState<string | null>(null);
   const avatar = preview ?? user.profile?.avatar ?? user.avatar ?? null;
   const [pendingEmail, setPendingEmail] = useState("");
   const [selectedEffect, setSelectedEffect] = useState(
@@ -80,25 +84,56 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
                   initials
                 )}
               </div>
-              <label className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background/60 px-3 py-2 text-sm font-medium backdrop-blur transition hover:bg-secondary sm:w-auto">
-                <Camera className="size-4" />
-                Выбрать аватар
-                <input
-                  name="avatar"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="sr-only"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0];
-                    if (!file) return;
-                    setPreview((oldPreview) => {
-                      if (oldPreview?.startsWith("blob:")) URL.revokeObjectURL(oldPreview);
-                      return URL.createObjectURL(file);
-                    });
-                  }}
-                />
-              </label>
+              <div className="space-y-2">
+                <label className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background/60 px-3 py-2 text-sm font-medium backdrop-blur transition hover:bg-secondary sm:w-auto">
+                  <Camera className="size-4" />
+                  Выбрать аватар
+                  <input
+                    name="avatar"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="sr-only"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (!file) {
+                        setAvatarClientError(null);
+                        return;
+                      }
+
+                      if (file.size > AVATAR_MAX_SIZE) {
+                        event.target.value = "";
+                        setAvatarClientError("Аватар должен быть не больше 1 МБ.");
+                        setPreview((oldPreview) => {
+                          if (oldPreview?.startsWith("blob:")) URL.revokeObjectURL(oldPreview);
+                          return null;
+                        });
+                        return;
+                      }
+
+                      if (!AVATAR_ACCEPTED_TYPES.has(file.type)) {
+                        event.target.value = "";
+                        setAvatarClientError("Поддерживаются только JPG, PNG и WebP.");
+                        setPreview((oldPreview) => {
+                          if (oldPreview?.startsWith("blob:")) URL.revokeObjectURL(oldPreview);
+                          return null;
+                        });
+                        return;
+                      }
+
+                      setAvatarClientError(null);
+                      setPreview((oldPreview) => {
+                        if (oldPreview?.startsWith("blob:")) URL.revokeObjectURL(oldPreview);
+                        return URL.createObjectURL(file);
+                      });
+                    }}
+                  />
+                </label>
+                <p className="text-xs leading-5 text-muted-foreground">JPG, PNG или WebP до 1 МБ.</p>
+              </div>
             </div>
+            {avatarClientError ? (
+              <p className="text-sm text-destructive">{avatarClientError}</p>
+            ) : null}
             <FormMessage state={profileState} field="avatar" />
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -146,7 +181,7 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
 
             <p className="text-xs leading-5 text-muted-foreground">
               Профиль, отображаемое имя, аватар и bio могут быть доступны другим пользователям и
-              посетителям сайта.{" "}
+              посетителям сайта. {" "}
               <Link
                 href={LEGAL_DOCUMENTS.personalDataDistributionConsent.href}
                 className="text-primary hover:underline"
