@@ -24,6 +24,9 @@ const TITLE_MAX_LENGTH = 160;
 const CONTENT_MAX_LENGTH = 120_000;
 const POST_IMAGE_UPLOAD_DISABLED_NOTICE =
   "Загрузка изображений на сайт отключена. Загрузите фото на внешний сервис и вставьте прямую HTTPS-ссылку.";
+const STANDALONE_IMAGE_URL_PATTERN =
+  /<p>\s*(https:\/\/[^\s<>"']+\.(?:png|jpe?g|webp|gif)(?:\?[^\s<>"']*)?)\s*<\/p>/giu;
+const IMAGE_TAG_PATTERN = /<img\b[^>]*>/giu;
 
 export interface SavePostInput {
   postId?: string;
@@ -43,6 +46,35 @@ export interface PostEditorActionResult {
 
 function slugifyTitle(title: string) {
   return createLatinSlug(title);
+}
+
+function escapeHtmlAttribute(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function isAllowedExternalImageUrl(value: string) {
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "https:" && /\.(?:png|jpe?g|webp|gif)$/iu.test(url.pathname);
+  } catch {
+    return false;
+  }
+}
+
+function renderStandaloneImageUrls(html: string) {
+  return html.replace(STANDALONE_IMAGE_URL_PATTERN, (match, imageUrl: string) => {
+    const trimmedUrl = imageUrl.trim();
+
+    if (!isAllowedExternalImageUrl(trimmedUrl)) {
+      return match;
+    }
+
+    return `<p><img src="${escapeHtmlAttribute(trimmedUrl)}" alt="Изображение" /></p>`;
+  });
 }
 
 async function createUniqueSlug(title: string, existingPostId?: string) {
@@ -85,9 +117,11 @@ async function createPostSecurityEvent(input: {
 export async function savePostAction(input: SavePostInput): Promise<PostEditorActionResult> {
   const title = input.title.trim();
   const rawContent = input.content;
-  const content = sanitizePostHtml(rawContent);
+  const contentWithRenderedImages = renderStandaloneImageUrls(rawContent);
+  const content = sanitizePostHtml(contentWithRenderedImages);
+  const contentWithoutImages = content.replace(IMAGE_TAG_PATTERN, " ");
   const tags = normalizeTags(input.tags ?? []);
-  const plainText = content.replace(/<[^>]*>/g, "").trim();
+  const plainText = contentWithoutImages.replace(/<[^>]*>/g, "").trim();
 
   if (!title) {
     return { ok: false, message: "Добавьте заголовок." };
@@ -136,9 +170,9 @@ export async function savePostAction(input: SavePostInput): Promise<PostEditorAc
     const filter = combineFilterResults([
       evaluateContentFilter({
         kind: "post",
-        text: `${title}\n${rawContent}\n${plainText}`,
+        text: `${title}\n${contentWithoutImages}\n${plainText}`,
         recentTexts: recentPosts.map(
-          (post) => `${post.title}\n${post.content.replace(/<[^>]*>/g, " ")}`,
+          (post) => `${post.title}\n${post.content.replace(IMAGE_TAG_PATTERN, " ").replace(/<[^>]*>/g, " ")}`,
         ),
       }),
       ...tags.map((tag) => evaluateContentFilter({ kind: "tag", text: `${tag.name} ${tag.slug}` })),
