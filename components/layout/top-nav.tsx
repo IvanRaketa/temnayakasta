@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, Castle, Search, Sparkles } from "lucide-react";
+import { Bell, Castle, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -18,10 +18,6 @@ export function TopNav({ unreadCount }: { unreadCount: number }) {
           <span className="hidden min-w-0 sm:inline">
             <span className="block text-base font-semibold leading-tight text-foreground">
               Тёмная Каста
-            </span>
-            <span className="inline-flex items-center gap-1 text-[11px] font-medium uppercase text-muted-foreground">
-              <Sparkles className="size-3 text-primary" />
-              social network
             </span>
           </span>
         </Link>
