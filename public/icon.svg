@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Тёмная Каста">
+  <rect width="512" height="512" rx="96" fill="#181922"/>
+  <path d="M96 104h320v72H296v232h-80V176H96z" fill="#f3d9b1"/>
+  <path d="M326 220h86l-96 86 104 102h-94l-86-92z" fill="#c46a38"/>
+  <path d="M216 292h70v116h-70z" fill="#f3d9b1"/>
+</svg>

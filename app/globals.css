@@ -1,0 +1,1124 @@
+@import "tailwindcss";
+@import "../styles/theme.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply min-h-screen bg-background text-foreground antialiased;
+    background:
+      linear-gradient(
+        135deg,
+        rgba(12, 18, 30, 0.96) 0%,
+        rgba(5, 7, 12, 0.98) 48%,
+        rgba(11, 15, 21, 1) 100%
+      ),
+      repeating-linear-gradient(90deg, rgba(126, 231, 255, 0.05) 0 1px, transparent 1px 78px),
+      repeating-linear-gradient(0deg, rgba(246, 205, 96, 0.045) 0 1px, transparent 1px 78px);
+    background-attachment: fixed;
+    font-family:
+      Inter,
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      sans-serif;
+  }
+
+  body::selection {
+    background: color-mix(in oklch, var(--primary) 35%, transparent);
+    color: var(--foreground);
+  }
+
+  .light body {
+    background:
+      linear-gradient(
+        135deg,
+        rgba(248, 251, 255, 0.99) 0%,
+        rgba(235, 244, 249, 0.98) 46%,
+        rgba(250, 247, 239, 0.98) 100%
+      ),
+      repeating-linear-gradient(90deg, rgba(17, 113, 145, 0.048) 0 1px, transparent 1px 78px),
+      repeating-linear-gradient(0deg, rgba(152, 106, 20, 0.043) 0 1px, transparent 1px 78px);
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  .tk-shell-surface {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .tk-shell-surface::before {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    content: "";
+    background:
+      linear-gradient(115deg, rgba(255, 212, 105, 0.1), transparent 28%),
+      linear-gradient(245deg, rgba(73, 220, 255, 0.11), transparent 34%),
+      linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.025) 100%);
+    opacity: 0.9;
+  }
+
+  .light .tk-shell-surface::before {
+    background:
+      linear-gradient(115deg, rgba(194, 138, 24, 0.12), transparent 28%),
+      linear-gradient(245deg, rgba(23, 147, 174, 0.12), transparent 34%),
+      linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.2) 100%);
+  }
+
+  .tk-shell-surface::after {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    content: "";
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: linear-gradient(to bottom, transparent, black 18%, black 72%, transparent);
+    opacity: 0.18;
+  }
+
+  .light .tk-shell-surface::after {
+    background-image:
+      linear-gradient(rgba(17, 47, 70, 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(17, 47, 70, 0.055) 1px, transparent 1px);
+    opacity: 0.26;
+  }
+
+  .tk-glass {
+    border: 1px solid var(--glass-line);
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.026)), var(--glass);
+    box-shadow:
+      0 18px 60px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(18px) saturate(150%);
+  }
+
+  .light .tk-glass {
+    box-shadow:
+      0 18px 55px rgba(48, 65, 88, 0.13),
+      inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  }
+
+  .tk-glass-strong {
+    border: 1px solid color-mix(in oklch, var(--glass-line) 78%, var(--primary) 22%);
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
+      var(--glass-strong);
+    box-shadow:
+      0 22px 70px rgba(0, 0, 0, 0.34),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(22px) saturate(165%);
+  }
+
+  .light .tk-glass-strong {
+    box-shadow:
+      0 22px 64px rgba(48, 65, 88, 0.16),
+      inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  }
+
+  .tk-panel {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
+
+  .tk-panel::before {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    content: "";
+    background:
+      linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent),
+      linear-gradient(180deg, rgba(126, 231, 255, 0.08), transparent 42%);
+    opacity: 0.58;
+  }
+
+  .light .tk-panel::before {
+    background:
+      linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.44), transparent),
+      linear-gradient(180deg, color-mix(in oklch, var(--accent) 12%, transparent), transparent 46%);
+    opacity: 0.72;
+  }
+
+  .tk-panel > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .tk-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    min-height: clamp(34rem, 72vh, 48rem);
+  }
+
+  .tk-hero::before {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background:
+      linear-gradient(
+        115deg,
+        rgba(7, 9, 16, 0.92) 0%,
+        rgba(7, 10, 18, 0.72) 44%,
+        rgba(5, 7, 12, 0.36) 100%
+      ),
+      linear-gradient(180deg, transparent 62%, rgba(7, 9, 16, 0.88) 100%);
+    z-index: 1;
+  }
+
+  .light .tk-hero::before {
+    background:
+      linear-gradient(
+        115deg,
+        rgba(247, 250, 255, 0.9) 0%,
+        rgba(238, 246, 251, 0.78) 48%,
+        rgba(245, 249, 255, 0.5) 100%
+      ),
+      linear-gradient(180deg, transparent 58%, rgba(245, 249, 255, 0.88) 100%);
+  }
+
+  .tk-hero::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background-image:
+      linear-gradient(rgba(246, 205, 96, 0.16) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(126, 231, 255, 0.13) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at 70% 70%, black 0%, transparent 66%);
+    opacity: 0.16;
+    z-index: 1;
+  }
+
+  .light .tk-hero::after {
+    background-image:
+      linear-gradient(rgba(169, 113, 12, 0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(11, 128, 157, 0.13) 1px, transparent 1px);
+    opacity: 0.3;
+  }
+
+  .tk-hero-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .tk-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: fit-content;
+    border: 1px solid color-mix(in oklch, var(--primary) 36%, var(--glass-line));
+    border-radius: var(--radius-md);
+    background: color-mix(in oklch, var(--primary) 13%, transparent);
+    padding: 0.35rem 0.65rem;
+    color: var(--primary);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .tk-metric-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 7.25rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-line);
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.025)),
+      color-mix(in oklch, var(--card) 88%, transparent);
+    padding: 1rem;
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .light .tk-metric-card {
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.24)),
+      color-mix(in oklch, var(--card) 92%, transparent);
+    box-shadow: 0 14px 36px rgba(48, 69, 92, 0.1);
+  }
+
+  .tk-hero .tk-metric-card {
+    min-height: 6.5rem;
+  }
+
+  .tk-pinned-post {
+    border-color: color-mix(in oklch, var(--primary) 58%, var(--glass-line));
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--primary) 20%, transparent),
+      0 22px 66px rgba(0, 0, 0, 0.26),
+      var(--aura-gold);
+  }
+
+  .light .tk-pinned-post {
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--primary) 18%, transparent),
+      0 20px 58px rgba(109, 84, 28, 0.16);
+  }
+
+  .tk-profile-cover {
+    background:
+      linear-gradient(
+        135deg,
+        color-mix(in oklch, var(--primary) 24%, transparent),
+        transparent 32%
+      ),
+      linear-gradient(245deg, color-mix(in oklch, var(--accent) 26%, transparent), transparent 40%),
+      linear-gradient(
+        180deg,
+        color-mix(in oklch, var(--background) 14%, transparent),
+        color-mix(in oklch, var(--background) 92%, transparent)
+      );
+  }
+
+  .tk-profile-cover-grid {
+    background-image:
+      linear-gradient(color-mix(in oklch, var(--accent) 22%, transparent) 1px, transparent 1px),
+      linear-gradient(
+        90deg,
+        color-mix(in oklch, var(--primary) 18%, transparent) 1px,
+        transparent 1px
+      );
+    background-size: 42px 42px;
+    opacity: 0.5;
+  }
+
+  .tk-island-accent {
+    border-color: color-mix(in oklch, var(--accent) 52%, var(--glass-line));
+  }
+
+  .tk-metric-card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in oklch, var(--primary) 54%, var(--glass-line));
+    box-shadow: var(--aura-gold);
+  }
+
+  .tk-link-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-line);
+    background: color-mix(in oklch, var(--card) 86%, transparent);
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      background-color 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .light .tk-link-card {
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.2)),
+      color-mix(in oklch, var(--card) 92%, transparent);
+  }
+
+  .tk-link-card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in oklch, var(--accent) 58%, var(--glass-line));
+    background: color-mix(in oklch, var(--secondary) 68%, transparent);
+    box-shadow: var(--aura-cyan);
+  }
+
+  .tk-pill {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 0.45rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--glass-line);
+    background: color-mix(in oklch, var(--secondary) 72%, transparent);
+    padding: 0.35rem 0.65rem;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+  }
+
+  .tk-avatar-ring {
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--accent) 45%, transparent),
+      0 0 0 5px color-mix(in oklch, var(--accent) 12%, transparent),
+      0 16px 40px rgba(0, 0, 0, 0.28);
+  }
+
+  .light .tk-avatar-ring {
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--accent) 34%, transparent),
+      0 0 0 5px color-mix(in oklch, var(--accent) 8%, transparent),
+      0 16px 34px rgba(50, 68, 88, 0.16);
+  }
+
+  .tk-premium-border {
+    border-color: color-mix(in oklch, var(--primary) 62%, var(--glass-line));
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--primary) 24%, transparent),
+      var(--aura-gold);
+  }
+
+  .tk-hover-lift {
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .tk-hover-lift:hover {
+    transform: translateY(-3px);
+  }
+
+  .tk-fade-in {
+    animation: tk-fade-in 320ms ease-out both;
+  }
+
+  .tk-slide-up {
+    animation: tk-slide-up 560ms ease both;
+  }
+
+  .tk-glow-pulse {
+    animation: tk-glow-pulse 3.6s ease-in-out infinite;
+  }
+
+  .tk-parallax {
+    transform: translateY(0);
+    transition: transform 220ms ease;
+  }
+
+  .tk-parallax:hover {
+    transform: translateY(-4px);
+  }
+
+  .island-map {
+    position: relative;
+    min-height: 31rem;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    border: 1px solid color-mix(in oklch, var(--accent) 40%, var(--glass-line));
+    background:
+      radial-gradient(
+        circle at 18% 28%,
+        color-mix(in oklch, var(--emerald) 18%, transparent),
+        transparent 24%
+      ),
+      radial-gradient(
+        circle at 74% 18%,
+        color-mix(in oklch, var(--gold) 18%, transparent),
+        transparent 24%
+      ),
+      radial-gradient(
+        circle at 62% 72%,
+        color-mix(in oklch, var(--cyan) 18%, transparent),
+        transparent 28%
+      ),
+      linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.022)),
+      color-mix(in oklch, var(--background) 84%, transparent);
+    padding: 1rem;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+      0 20px 58px rgba(0, 0, 0, 0.22);
+  }
+
+  .light .island-map {
+    border-color: color-mix(in oklch, var(--accent) 34%, var(--glass-line));
+    background:
+      radial-gradient(
+        circle at 18% 28%,
+        color-mix(in oklch, var(--emerald) 14%, transparent),
+        transparent 24%
+      ),
+      radial-gradient(
+        circle at 74% 18%,
+        color-mix(in oklch, var(--gold) 15%, transparent),
+        transparent 24%
+      ),
+      radial-gradient(
+        circle at 62% 72%,
+        color-mix(in oklch, var(--cyan) 14%, transparent),
+        transparent 28%
+      ),
+      linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.24)),
+      color-mix(in oklch, var(--background) 92%, transparent);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.64),
+      0 20px 48px rgba(48, 69, 92, 0.12);
+  }
+
+  .island-map::before {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background-image:
+      linear-gradient(color-mix(in oklch, var(--accent) 14%, transparent) 1px, transparent 1px),
+      linear-gradient(
+        90deg,
+        color-mix(in oklch, var(--primary) 12%, transparent) 1px,
+        transparent 1px
+      );
+    background-size: 38px 38px;
+    mask-image: radial-gradient(circle at 54% 50%, black 0%, transparent 78%);
+    opacity: 0.24;
+  }
+
+  .light .island-map::before {
+    opacity: 0.32;
+  }
+
+  .island-map::after {
+    position: absolute;
+    inset: auto 1.5rem 1.1rem;
+    height: 1px;
+    content: "";
+    background: linear-gradient(90deg, transparent, var(--cyan), var(--gold), transparent);
+    opacity: 0.42;
+  }
+
+  .island-map__header,
+  .island-map__footer {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .island-map__level {
+    display: grid;
+    min-width: 5.5rem;
+    place-items: center;
+    border-radius: var(--radius-md);
+    border: 1px solid color-mix(in oklch, var(--primary) 44%, var(--glass-line));
+    background: color-mix(in oklch, var(--card) 76%, transparent);
+    padding: 0.7rem 0.9rem;
+    text-align: center;
+    box-shadow: var(--aura-gold);
+  }
+
+  .island-map__level span {
+    color: var(--muted-foreground);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .island-map__level strong {
+    color: var(--foreground);
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+
+  .island-map__canvas {
+    position: relative;
+    z-index: 2;
+    min-height: 22rem;
+    margin-top: 1rem;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background:
+      radial-gradient(
+        ellipse at 22% 64%,
+        color-mix(in oklch, var(--gold) 17%, transparent),
+        transparent 15%
+      ),
+      radial-gradient(
+        ellipse at 80% 24%,
+        color-mix(in oklch, var(--cyan) 16%, transparent),
+        transparent 17%
+      ),
+      linear-gradient(180deg, rgba(9, 20, 31, 0.38), rgba(6, 11, 19, 0.09));
+  }
+
+  .light .island-map__canvas {
+    background:
+      radial-gradient(
+        ellipse at 22% 64%,
+        color-mix(in oklch, var(--gold) 13%, transparent),
+        transparent 15%
+      ),
+      radial-gradient(
+        ellipse at 80% 24%,
+        color-mix(in oklch, var(--cyan) 13%, transparent),
+        transparent 17%
+      ),
+      linear-gradient(180deg, rgba(232, 243, 248, 0.82), rgba(248, 251, 255, 0.48));
+  }
+
+  .island-map__route {
+    position: absolute;
+    inset: 13% 5% 17%;
+    z-index: 1;
+    background:
+      linear-gradient(
+        90deg,
+        color-mix(in oklch, var(--gold) 72%, transparent),
+        color-mix(in oklch, var(--cyan) 72%, transparent)
+      ),
+      radial-gradient(circle, rgba(255, 255, 255, 0.5) 0 1.5px, transparent 1.7px);
+    background-size:
+      auto,
+      14px 14px;
+    clip-path: polygon(
+      0 64%,
+      16% 31%,
+      39% 58%,
+      58% 25%,
+      76% 50%,
+      100% 22%,
+      100% 25%,
+      76% 53%,
+      58% 28%,
+      39% 61%,
+      16% 34%,
+      0 67%
+    );
+    opacity: 0.38;
+  }
+
+  .light .island-map__route {
+    opacity: 0.3;
+  }
+
+  .island-map__sea {
+    position: absolute;
+    border-radius: 39% 61% 57% 43% / 45% 48% 52% 55%;
+    border: 1px solid color-mix(in oklch, var(--accent) 28%, transparent);
+    background: color-mix(in oklch, var(--accent) 9%, transparent);
+    transform: rotate(-8deg);
+  }
+
+  .island-map__sea--a {
+    left: 10%;
+    top: 18%;
+    width: 42%;
+    height: 46%;
+    border-radius: 42% 58% 64% 36% / 40% 52% 48% 60%;
+  }
+
+  .island-map__sea--b {
+    right: 6%;
+    bottom: 8%;
+    width: 48%;
+    height: 42%;
+    border-radius: 58% 42% 38% 62% / 54% 42% 58% 46%;
+    transform: rotate(10deg);
+  }
+
+  .island-map__node {
+    position: absolute;
+    z-index: 3;
+    display: grid;
+    width: 7.25rem;
+    justify-items: center;
+    gap: 0.42rem;
+    text-align: center;
+    transform: translate(-50%, -50%);
+  }
+
+  .island-map__node--gold {
+    --island-color: var(--gold);
+    --island-bg: color-mix(in oklch, var(--gold) 22%, transparent);
+  }
+
+  .island-map__node--emerald {
+    --island-color: var(--emerald);
+    --island-bg: color-mix(in oklch, var(--emerald) 20%, transparent);
+  }
+
+  .island-map__node--cyan {
+    --island-color: var(--cyan);
+    --island-bg: color-mix(in oklch, var(--cyan) 20%, transparent);
+  }
+
+  .island-map__node--violet {
+    --island-color: var(--magenta);
+    --island-bg: color-mix(in oklch, var(--magenta) 18%, transparent);
+  }
+
+  .island-map__node--amber {
+    --island-color: var(--amber);
+    --island-bg: color-mix(in oklch, var(--amber) 20%, transparent);
+  }
+
+  .island-map__land {
+    position: relative;
+    display: grid;
+    isolation: isolate;
+    width: 4.7rem;
+    height: 3.35rem;
+    place-items: center;
+    color: var(--island-color);
+    filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.2))
+      drop-shadow(0 0 18px color-mix(in oklch, var(--island-color) 24%, transparent));
+  }
+
+  .light .island-map__land {
+    filter: drop-shadow(0 12px 20px rgba(48, 69, 92, 0.14))
+      drop-shadow(0 0 14px color-mix(in oklch, var(--island-color) 18%, transparent));
+  }
+
+  .island-map__land::before,
+  .island-map__land::after {
+    position: absolute;
+    content: "";
+  }
+
+  .island-map__land::before {
+    inset: 0;
+    z-index: -1;
+    clip-path: var(
+      --island-shape,
+      polygon(8% 48%, 18% 24%, 42% 13%, 70% 19%, 91% 42%, 82% 71%, 56% 88%, 24% 78%)
+    );
+    background:
+      radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.35), transparent 20%),
+      radial-gradient(
+        circle at 70% 62%,
+        color-mix(in oklch, var(--island-color) 22%, transparent),
+        transparent 30%
+      ),
+      linear-gradient(145deg, var(--island-bg), color-mix(in oklch, var(--card) 76%, transparent)),
+      color-mix(in oklch, var(--card) 88%, transparent);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklch, var(--island-color) 64%, var(--glass-line)),
+      inset 0 -0.65rem 1.1rem color-mix(in oklch, var(--island-color) 12%, transparent);
+  }
+
+  .island-map__land::after {
+    inset: auto 0.62rem -0.28rem;
+    z-index: -2;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--island-color) 28%, transparent);
+    filter: blur(4px);
+    opacity: 0.85;
+  }
+
+  .island-map__land svg {
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.18));
+  }
+
+  .island-map__land--cove {
+    --island-shape: polygon(
+      5% 52%,
+      14% 29%,
+      34% 15%,
+      59% 12%,
+      86% 30%,
+      96% 54%,
+      82% 76%,
+      51% 88%,
+      20% 75%
+    );
+  }
+
+  .island-map__land--grove {
+    --island-shape: polygon(
+      9% 43%,
+      22% 17%,
+      52% 9%,
+      78% 19%,
+      94% 45%,
+      84% 70%,
+      63% 86%,
+      31% 82%,
+      10% 64%
+    );
+  }
+
+  .island-map__land--harbor {
+    --island-shape: polygon(
+      7% 56%,
+      19% 27%,
+      45% 16%,
+      69% 21%,
+      92% 37%,
+      82% 57%,
+      96% 73%,
+      63% 86%,
+      30% 80%
+    );
+  }
+
+  .island-map__land--crystal {
+    --island-shape: polygon(12% 50%, 27% 20%, 54% 7%, 82% 24%, 95% 52%, 77% 79%, 46% 91%, 20% 73%);
+  }
+
+  .island-map__land--cliff {
+    --island-shape: polygon(4% 58%, 18% 23%, 48% 12%, 78% 18%, 97% 43%, 88% 74%, 58% 91%, 25% 82%);
+  }
+
+  .island-map__land--chain {
+    --island-shape: polygon(
+      6% 47%,
+      18% 24%,
+      38% 19%,
+      49% 31%,
+      64% 16%,
+      88% 27%,
+      96% 52%,
+      82% 78%,
+      55% 84%,
+      40% 70%,
+      22% 80%
+    );
+  }
+
+  .island-map__label {
+    max-width: 100%;
+    border-radius: var(--radius-sm);
+    border: 1px solid color-mix(in oklch, var(--glass-line) 82%, var(--island-color) 18%);
+    background: color-mix(in oklch, var(--popover) 78%, transparent);
+    padding: 0.35rem 0.45rem;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+  }
+
+  .light .island-map__label {
+    background: color-mix(in oklch, var(--popover) 88%, transparent);
+    box-shadow: 0 10px 20px rgba(48, 69, 92, 0.1);
+  }
+
+  .island-map__label p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .island-map__node--locked .island-map__land {
+    border-color: var(--glass-line);
+    color: var(--muted-foreground);
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12));
+  }
+
+  .island-map__node--locked .island-map__land::before {
+    background:
+      radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.14), transparent 23%),
+      linear-gradient(
+        145deg,
+        color-mix(in oklch, var(--secondary) 78%, transparent),
+        color-mix(in oklch, var(--card) 72%, transparent)
+      );
+    box-shadow: inset 0 0 0 1px var(--glass-line);
+  }
+
+  .island-map__node--locked .island-map__land::after {
+    opacity: 0.38;
+  }
+
+  .island-map__node--locked .island-map__label {
+    opacity: 0.72;
+  }
+
+  .island-map__footer {
+    margin-top: 1rem;
+    border-top: 1px solid var(--glass-line);
+    padding-top: 1rem;
+  }
+
+  .tiptap,
+  .prose-tk {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .tiptap p,
+  .prose-tk p {
+    margin: 0.75rem 0;
+  }
+
+  .tiptap h1,
+  .prose-tk h1 {
+    margin: 1.4rem 0 0.75rem;
+    font-size: 1.875rem;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  .tiptap h2,
+  .prose-tk h2 {
+    margin: 1.25rem 0 0.65rem;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    font-weight: 700;
+  }
+
+  .tiptap h3,
+  .prose-tk h3 {
+    margin: 1rem 0 0.5rem;
+    font-size: 1.25rem;
+    line-height: 1.3;
+    font-weight: 650;
+  }
+
+  .tiptap ul,
+  .tiptap ol,
+  .prose-tk ul,
+  .prose-tk ol {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .tiptap ul,
+  .prose-tk ul {
+    list-style: disc;
+  }
+
+  .tiptap ol,
+  .prose-tk ol {
+    list-style: decimal;
+  }
+
+  .tiptap blockquote,
+  .prose-tk blockquote {
+    margin: 1rem 0;
+    border-left: 3px solid var(--primary);
+    padding-left: 1rem;
+    color: var(--muted-foreground);
+  }
+
+  .tiptap pre,
+  .prose-tk pre {
+    margin: 1rem 0;
+    max-width: 100%;
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: color-mix(in oklch, var(--background) 84%, black);
+    padding: 1rem;
+  }
+
+  .tiptap code,
+  .prose-tk code {
+    border-radius: 0.25rem;
+    background: color-mix(in oklch, var(--secondary) 72%, transparent);
+    padding: 0.1rem 0.3rem;
+    font-size: 0.9em;
+  }
+
+  .tiptap pre code,
+  .prose-tk pre code {
+    background: transparent;
+    padding: 0;
+  }
+
+  .tiptap hr,
+  .prose-tk hr {
+    margin: 1.5rem 0;
+    border: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .tiptap a,
+  .prose-tk a {
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .tiptap img,
+  .prose-tk img {
+    margin: 1rem 0;
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--glass-line);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.26);
+  }
+
+  .tiptap p.is-editor-empty:first-child::before {
+    float: left;
+    height: 0;
+    color: var(--muted-foreground);
+    content: attr(data-placeholder);
+    pointer-events: none;
+  }
+
+  .premium-name {
+    background-size: 220% auto;
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    animation: premium-name-flow 4.5s linear infinite;
+  }
+
+  .premium-name--aurora {
+    background-image: linear-gradient(90deg, #8ee7ff, #f7d774, #9bf8c7, #8ee7ff);
+  }
+
+  .premium-name--ember {
+    background-image: linear-gradient(90deg, #ff9d5c, #ffd166, #ff5f6d, #ff9d5c);
+  }
+
+  .premium-name--violet {
+    background-image: linear-gradient(90deg, #b89cff, #64f4ff, #ff8bd8, #b89cff);
+  }
+
+  .reduce-motion .premium-name {
+    animation: none;
+    background-position: 0 50%;
+  }
+
+  .post-card-enter {
+    content-visibility: auto;
+    contain-intrinsic-size: 28rem;
+    animation: post-card-enter 420ms ease-out both;
+  }
+
+  .reduce-motion .post-card-enter {
+    animation: none;
+  }
+
+  @keyframes premium-name-flow {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 220% 50%;
+    }
+  }
+
+  @keyframes post-card-enter {
+    0% {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes tk-fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes tk-slide-up {
+    0% {
+      opacity: 0;
+      transform: translateY(0.8rem);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes tk-glow-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 rgba(255, 214, 102, 0);
+    }
+    50% {
+      box-shadow: 0 0 28px rgba(255, 214, 102, 0.22);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .tk-hero {
+      min-height: auto;
+    }
+
+    .tk-hero .tk-metric-card {
+      min-height: 5.75rem;
+      padding: 0.75rem;
+    }
+
+    .tk-hero .tk-metric-card .text-3xl {
+      font-size: 1.5rem;
+      line-height: 2rem;
+    }
+
+    .tk-hero-content {
+      min-height: 0 !important;
+    }
+
+    .island-map {
+      min-height: 28rem;
+      padding: 0.75rem;
+    }
+
+    .island-map__header,
+    .island-map__footer {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .island-map__level {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .island-map__canvas {
+      min-height: 19.5rem;
+    }
+
+    .island-map__node {
+      width: 5.35rem;
+      gap: 0.3rem;
+    }
+
+    .island-map__land {
+      width: 3.35rem;
+      height: 2.7rem;
+    }
+
+    .island-map__label p:first-child {
+      display: none;
+    }
+
+    .island-map__footer .min-w-36 {
+      min-width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tk-fade-in,
+    .tk-slide-up,
+    .tk-glow-pulse,
+    .post-card-enter,
+    .premium-name {
+      animation: none;
+    }
+
+    .tk-hover-lift:hover,
+    .tk-parallax:hover,
+    .tk-link-card:hover,
+    .tk-metric-card:hover {
+      transform: none;
+    }
+  }
+
+  .reduce-motion .tk-fade-in,
+  .reduce-motion .tk-slide-up,
+  .reduce-motion .tk-glow-pulse,
+  .reduce-motion .post-card-enter {
+    animation: none;
+  }
+
+  .reduce-motion .tk-hover-lift:hover,
+  .reduce-motion .tk-parallax:hover,
+  .reduce-motion .tk-link-card:hover,
+  .reduce-motion .tk-metric-card:hover {
+    transform: none;
+  }
+}

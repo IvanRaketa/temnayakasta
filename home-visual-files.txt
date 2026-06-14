@@ -1,0 +1,618 @@
+﻿=== SEARCH USAGE ===
+
+
+Path       : E:\temnayakasta120.ru\app\(main)\profile\[username]\island\page.tsx
+LineNumber : 27
+Line       : import { LazyCyberFortressScene } from "@/components/visuals/lazy-cyber-fortress-scene";
+
+Path       : E:\temnayakasta120.ru\app\(main)\profile\[username]\island\page.tsx
+LineNumber : 180
+Line       :             <LazyCyberFortressScene className="h-full min-h-full" variant="island" />
+
+Path       : E:\temnayakasta120.ru\app\(main)\page.tsx
+LineNumber : 19
+Line       : import { LazyCyberFortressScene } from "@/components/visuals/lazy-cyber-fortress-scene";
+
+Path       : E:\temnayakasta120.ru\app\(main)\page.tsx
+LineNumber : 97
+Line       :           <LazyCyberFortressScene className="h-full min-h-full" variant="fortress" />
+
+Path       : E:\temnayakasta120.ru\components\visuals\cyber-fortress-scene.tsx
+LineNumber : 8
+Line       : interface CyberFortressSceneProps {
+
+Path       : E:\temnayakasta120.ru\components\visuals\cyber-fortress-scene.tsx
+LineNumber : 78
+Line       : export function CyberFortressScene({
+
+Path       : E:\temnayakasta120.ru\components\visuals\cyber-fortress-scene.tsx
+LineNumber : 82
+Line       : }: CyberFortressSceneProps) {
+
+Path       : E:\temnayakasta120.ru\components\visuals\lazy-cyber-fortress-scene.tsx
+LineNumber : 7
+Line       : interface LazyCyberFortressSceneProps {
+
+Path       : E:\temnayakasta120.ru\components\visuals\lazy-cyber-fortress-scene.tsx
+LineNumber : 13
+Line       : function CyberFortressFallback({ className, compact }: LazyCyberFortressSceneProps) {
+
+Path       : E:\temnayakasta120.ru\components\visuals\lazy-cyber-fortress-scene.tsx
+LineNumber : 24
+Line       : const CyberFortressScene = dynamic<LazyCyberFortressSceneProps>(
+
+Path       : E:\temnayakasta120.ru\components\visuals\lazy-cyber-fortress-scene.tsx
+LineNumber : 25
+Line       :   () => import("@/components/visuals/cyber-fortress-scene").then((mod) => mod.CyberFortressScene),
+
+Path       : E:\temnayakasta120.ru\components\visuals\lazy-cyber-fortress-scene.tsx
+LineNumber : 28
+Line       :     loading: () => <CyberFortressFallback />,
+
+Path       : E:\temnayakasta120.ru\components\visuals\lazy-cyber-fortress-scene.tsx
+LineNumber : 32
+Line       : export function LazyCyberFortressScene(props: LazyCyberFortressSceneProps) {
+
+Path       : E:\temnayakasta120.ru\components\visuals\lazy-cyber-fortress-scene.tsx
+LineNumber : 33
+Line       :   return <CyberFortressScene {...props} />;
+
+
+
+
+
+=== app\(main)\page.tsx ===
+import type { Metadata } from "next";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Eye,
+  FileText,
+  MessageSquare,
+  Radio,
+  ServerCrash,
+  Sparkles,
+  Users,
+} from "lucide-react";
+
+import { AdSlot } from "@/components/ads/ad-slot";
+import { PostCard } from "@/components/posts/post-card";
+import { HomePresencePulse } from "@/components/presence/home-presence-pulse";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { LazyCyberFortressScene } from "@/components/visuals/lazy-cyber-fortress-scene";
+import { getCurrentSessionReadOnly } from "@/lib/auth/session-read";
+import { db } from "@/lib/db";
+import { AdPlacement, CommentStatus, PostStatus } from "@/lib/generated/prisma/client";
+import { presenceStore } from "@/lib/presence/store";
+import { getHomeRecommendations } from "@/lib/recommendations/home-recommendations";
+
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Р“Р»Р°РІРЅР°СЏ Р»РµРЅС‚Р°",
+  description:
+    "Р“Р»Р°РІРЅР°СЏ Р»РµРЅС‚Р° РўС‘РјРЅРѕР№ РљР°СЃС‚С‹: РѕРїСѓР±Р»РёРєРѕРІР°РЅРЅС‹Рµ Р°РІС‚РѕСЂСЃРєРёРµ РјР°С‚РµСЂРёР°Р»С‹, РѕР±СЃСѓР¶РґРµРЅРёСЏ Рё СЃРІРµР¶РёРµ РїСѓР±Р»РёРєР°С†РёРё СЃРѕРѕР±С‰РµСЃС‚РІР°.",
+};
+
+const HOME_POST_LIMIT = 10;
+
+function formatNumber(value: number) {
+  return new Intl.NumberFormat("ru-RU", {
+    notation: value >= 10_000 ? "compact" : "standard",
+    maximumFractionDigits: 1,
+  }).format(value);
+}
+
+async function getHomeStats() {
+  const pulse = presenceStore.snapshot("site").pulse;
+  const [posts, comments, views] = await Promise.all([
+    db.post.count({ where: { status: PostStatus.PUBLISHED } }),
+    db.comment.count({ where: { status: CommentStatus.PUBLISHED } }),
+    db.postView.count(),
+  ]);
+
+  return {
+    online: pulse.usersOnline,
+    posts,
+    comments,
+    views,
+  };
+}
+
+export default async function HomePage() {
+  const current = await getCurrentSessionReadOnly();
+  let recommendations: Awaited<ReturnType<typeof getHomeRecommendations>> = [];
+  let stats: Awaited<ReturnType<typeof getHomeStats>> = {
+    online: 0,
+    posts: 0,
+    comments: 0,
+    views: 0,
+  };
+  let databaseError = false;
+
+  try {
+    [recommendations, stats] = await Promise.all([
+      getHomeRecommendations(current?.user.id, HOME_POST_LIMIT),
+      getHomeStats(),
+    ]);
+  } catch (error) {
+    databaseError = true;
+    console.error(error);
+  }
+
+  const primaryCta = current
+    ? { href: "/create", label: "РЎРѕР·РґР°С‚СЊ РїРѕСЃС‚" }
+    : { href: "/register", label: "Р’РѕР№С‚Рё РІ РєР°СЃС‚Сѓ" };
+  const secondaryCta = current
+    ? { href: `/profile/${current.user.username}/island`, label: "РњРѕР№ РѕСЃС‚СЂРѕРІ" }
+    : { href: "/login", label: "РЈ РјРµРЅСЏ РµСЃС‚СЊ РґРѕСЃС‚СѓРї" };
+  const statItems = [
+    { label: "РћРЅР»Р°Р№РЅ", value: stats.online, icon: Radio },
+    { label: "РџРѕСЃС‚С‹", value: stats.posts, icon: FileText },
+    { label: "РљРѕРјРјРµРЅС‚Р°СЂРёРё", value: stats.comments, icon: MessageSquare },
+    { label: "РџСЂРѕСЃРјРѕС‚СЂС‹", value: stats.views, icon: Eye },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <section className="tk-hero tk-fade-in">
+        <div className="tk-hero-visual" aria-hidden="true">
+          <LazyCyberFortressScene className="h-full min-h-full" variant="fortress" />
+        </div>
+        <div className="tk-hero-content grid min-h-[inherit] gap-6 p-5 md:p-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:p-10 xl:grid-cols-[minmax(0,1fr)_21rem]">
+          <div className="flex max-w-xl flex-col justify-center">
+            <div className="tk-kicker">
+              <Sparkles className="size-3.5" />
+              РЎРѕС†РёР°Р»СЊРЅР°СЏ СЃРµС‚СЊ
+            </div>
+            <h1 className="mt-5 max-w-xl text-4xl font-semibold leading-[1.05] text-foreground sm:text-5xl lg:text-6xl">
+              РўС‘РјРЅР°СЏ РљР°СЃС‚Р°
+            </h1>
+            <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
+              РЎРѕС†РёР°Р»СЊРЅР°СЏ СЃРµС‚СЊ РґР»СЏ Р°РІС‚РѕСЂРѕРІ, РѕР±СЃСѓР¶РґРµРЅРёР№, Р»РёС‡РЅС‹С… РѕСЃС‚СЂРѕРІРѕРІ Рё Р¶РёРІРѕРіРѕ РїСЂРёСЃСѓС‚СЃС‚РІРёСЏ РІРЅСѓС‚СЂРё
+              СЃРѕРѕР±С‰РµСЃС‚РІР°.
+            </p>
+            <div className="mt-7 flex flex-col gap-3 xl:flex-row xl:flex-wrap">
+              <Button asChild size="default" className="h-11 justify-center px-5">
+                <Link href={primaryCta.href}>
+                  {primaryCta.label}
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="default" className="h-11 justify-center px-5">
+                <Link href={secondaryCta.href}>{secondaryCta.label}</Link>
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 content-end gap-3">
+            {statItems.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <div key={item.label} className="tk-metric-card tk-slide-up">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs font-semibold uppercase text-muted-foreground">
+                      {item.label}
+                    </span>
+                    <span className="grid size-9 place-items-center rounded-md border border-border bg-background/45 text-primary">
+                      <Icon className="size-4" />
+                    </span>
+                  </div>
+                  <div className="mt-4 text-3xl font-semibold text-foreground">
+                    {formatNumber(item.value)}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <HomePresencePulse />
+
+      <AdSlot placement={AdPlacement.HOME_TOP} currentUser={current?.user} />
+
+      {databaseError ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ServerCrash className="size-5 text-primary" />
+              Р‘Р°Р·Р° РґР°РЅРЅС‹С… РЅРµРґРѕСЃС‚СѓРїРЅР°
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm leading-6 text-muted-foreground">
+              РЎРµР№С‡Р°СЃ РЅРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ РїСѓР±Р»РёРєР°С†РёРё. РћР±РЅРѕРІРёС‚Рµ СЃС‚СЂР°РЅРёС†Сѓ РїРѕР·Р¶Рµ РёР»Рё РІРµСЂРЅРёС‚РµСЃСЊ РІ Р»РµРЅС‚Сѓ
+              С‡РµСЂРµР· РЅРµСЃРєРѕР»СЊРєРѕ РјРёРЅСѓС‚.
+            </p>
+          </CardContent>
+        </Card>
+      ) : recommendations.length > 0 ? (
+        <section className="space-y-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="tk-kicker">Р›РµРЅС‚Р°</p>
+              <h2 className="mt-3 text-2xl font-semibold text-foreground">
+                Р РµРєРѕРјРµРЅРґРѕРІР°РЅРѕ РґР»СЏ С‚РµР±СЏ
+              </h2>
+            </div>
+            <span className="tk-pill">
+              <Users className="size-3.5 text-primary" />
+              СЃРѕС†РёР°Р»СЊРЅР°СЏ Р»РµРЅС‚Р°
+            </span>
+          </div>
+          {recommendations.map((recommendation) => (
+            <PostCard
+              key={recommendation.post.id}
+              post={recommendation.post}
+              recommendationReason={recommendation.reason}
+            />
+          ))}
+        </section>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>РџРѕРєР° РЅРµС‚ РѕРїСѓР±Р»РёРєРѕРІР°РЅРЅС‹С… РїРѕСЃС‚РѕРІ</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm leading-6 text-muted-foreground">
+              РљРѕРіРґР° Р°РІС‚РѕСЂС‹ РЅР°С‡РЅСѓС‚ РїСѓР±Р»РёРєРѕРІР°С‚СЊ РјР°С‚РµСЂРёР°Р»С‹, РѕРЅРё РїРѕСЏРІСЏС‚СЃСЏ Р·РґРµСЃСЊ РІ РїРѕСЂСЏРґРєРµ СЃРІРµР¶РµСЃС‚Рё.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+=== lazy-cyber-fortress-scene.tsx ===
+"use client";
+
+import dynamic from "next/dynamic";
+
+import { cn } from "@/lib/utils";
+
+interface LazyCyberFortressSceneProps {
+  className?: string;
+  compact?: boolean;
+  variant?: "fortress" | "island";
+}
+
+function CyberFortressFallback({ className, compact }: LazyCyberFortressSceneProps) {
+  return (
+    <div className={cn("cyber-scene", compact && "min-h-72", className)} aria-hidden="true">
+      <div className="cyber-scene__sky" />
+      <div className="cyber-scene__horizon" />
+      <div className="cyber-scene__grid" />
+      <div className="cyber-scene__fallback-mark">РўРљ</div>
+    </div>
+  );
+}
+
+const CyberFortressScene = dynamic<LazyCyberFortressSceneProps>(
+  () => import("@/components/visuals/cyber-fortress-scene").then((mod) => mod.CyberFortressScene),
+  {
+    ssr: false,
+    loading: () => <CyberFortressFallback />,
+  },
+);
+
+export function LazyCyberFortressScene(props: LazyCyberFortressSceneProps) {
+  return <CyberFortressScene {...props} />;
+}
+
+=== cyber-fortress-scene.tsx ===
+"use client";
+
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
+
+import { cn } from "@/lib/utils";
+
+interface CyberFortressSceneProps {
+  className?: string;
+  compact?: boolean;
+  variant?: "fortress" | "island";
+}
+
+function makeLine(points: THREE.Vector3[], color: number, opacity = 1) {
+  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  const material = new THREE.LineBasicMaterial({
+    color,
+    transparent: true,
+    opacity,
+  });
+
+  return new THREE.Line(geometry, material);
+}
+
+function makeBoxEdges(width: number, height: number, depth: number, color: number, opacity = 0.88) {
+  const geometry = new THREE.BoxGeometry(width, height, depth);
+  const edges = new THREE.EdgesGeometry(geometry);
+  const material = new THREE.LineBasicMaterial({
+    color,
+    transparent: true,
+    opacity,
+  });
+
+  return new THREE.LineSegments(edges, material);
+}
+
+function makeRectangle(width: number, depth: number, y: number, color: number, opacity = 0.86) {
+  const halfWidth = width / 2;
+  const halfDepth = depth / 2;
+
+  return makeLine(
+    [
+      new THREE.Vector3(-halfWidth, y, -halfDepth),
+      new THREE.Vector3(halfWidth, y, -halfDepth),
+      new THREE.Vector3(halfWidth, y, halfDepth),
+      new THREE.Vector3(-halfWidth, y, halfDepth),
+      new THREE.Vector3(-halfWidth, y, -halfDepth),
+    ],
+    color,
+    opacity,
+  );
+}
+
+function addBeacon(group: THREE.Group, x: number, z: number, height: number, color: number) {
+  const post = makeLine(
+    [new THREE.Vector3(x, 0.08, z), new THREE.Vector3(x, height, z)],
+    color,
+    0.48,
+  );
+  const pulse = new THREE.Mesh(
+    new THREE.SphereGeometry(0.055, 18, 18),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.95 }),
+  );
+  const halo = new THREE.Mesh(
+    new THREE.TorusGeometry(0.18, 0.012, 10, 32),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.8 }),
+  );
+
+  pulse.position.set(x, height, z);
+  halo.position.set(x, height + 0.04, z);
+  halo.rotation.x = Math.PI / 2.3;
+  halo.userData.pulse = true;
+  pulse.userData.pulse = true;
+
+  group.add(post, pulse, halo);
+}
+
+export function CyberFortressScene({
+  className,
+  compact = false,
+  variant = "fortress",
+}: CyberFortressSceneProps) {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const host = hostRef.current;
+    const canvas = canvasRef.current;
+
+    if (!host || !canvas) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let renderer: THREE.WebGLRenderer;
+
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: true,
+        preserveDrawingBuffer: true,
+        powerPreference: "high-performance",
+      });
+      host.classList.add("cyber-scene--webgl");
+    } catch {
+      host.classList.remove("cyber-scene--webgl");
+      return;
+    }
+    renderer.setClearColor(0x000000, 0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-4.4, 4.4, 2.8, -2.8, 0.1, 100);
+    camera.position.set(4.8, 4.2, 5.3);
+    camera.lookAt(0, 0, 0);
+
+    const root = new THREE.Group();
+    root.position.y = -0.35;
+    scene.add(root);
+
+    const cyan = variant === "island" ? 0x3feca6 : 0x7ee7ff;
+    const gold = 0xf6cd60;
+    const deep = 0x07101d;
+
+    const grid = new THREE.GridHelper(10, 22, cyan, gold);
+    grid.position.y = -0.08;
+    grid.material.transparent = true;
+    grid.material.opacity = 0.2;
+    root.add(grid);
+
+    const baseMaterial = new THREE.MeshBasicMaterial({
+      color: deep,
+      transparent: true,
+      opacity: 0.54,
+      side: THREE.DoubleSide,
+    });
+    const glassMaterial = new THREE.MeshBasicMaterial({
+      color: cyan,
+      transparent: true,
+      opacity: 0.08,
+      side: THREE.DoubleSide,
+    });
+    const goldGlassMaterial = new THREE.MeshBasicMaterial({
+      color: gold,
+      transparent: true,
+      opacity: 0.1,
+      side: THREE.DoubleSide,
+    });
+
+    const lowerPlate = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 5.2), glassMaterial);
+    lowerPlate.rotation.x = -Math.PI / 2;
+    lowerPlate.position.y = 0.02;
+    root.add(lowerPlate, makeRectangle(5.2, 5.2, 0.04, cyan, 0.74));
+
+    const platform = new THREE.Mesh(new THREE.BoxGeometry(3.75, 0.34, 3.75), baseMaterial);
+    platform.position.y = 0.26;
+    const platformEdges = makeBoxEdges(3.75, 0.34, 3.75, cyan, 0.9);
+    platformEdges.position.copy(platform.position);
+    root.add(platform, platformEdges);
+
+    const upperPlate = new THREE.Mesh(new THREE.PlaneGeometry(3.25, 3.25), goldGlassMaterial);
+    upperPlate.rotation.x = -Math.PI / 2;
+    upperPlate.position.y = 0.49;
+    root.add(upperPlate, makeRectangle(3.25, 3.25, 0.51, gold, 0.84));
+
+    const core = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.82, 0.82, 0.5, 6, 1, false),
+      new THREE.MeshBasicMaterial({
+        color: 0x121820,
+        transparent: true,
+        opacity: 0.86,
+      }),
+    );
+    core.position.y = 0.84;
+    core.rotation.y = Math.PI / 6;
+    core.userData.pulse = true;
+    const coreEdges = new THREE.LineSegments(
+      new THREE.EdgesGeometry(core.geometry),
+      new THREE.LineBasicMaterial({ color: gold, transparent: true, opacity: 0.96 }),
+    );
+    coreEdges.position.copy(core.position);
+    coreEdges.rotation.copy(core.rotation);
+    coreEdges.userData.pulse = true;
+    root.add(core, coreEdges);
+
+    const lightColumn = makeLine(
+      [new THREE.Vector3(0, 0.92, 0), new THREE.Vector3(0, 2.9, 0)],
+      gold,
+      0.9,
+    );
+    root.add(lightColumn);
+
+    const smallDeck = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.2, 1.4), baseMaterial);
+    smallDeck.position.set(0, 0.1, 2.85);
+    const smallDeckEdges = makeBoxEdges(1.4, 0.2, 1.4, gold, 0.92);
+    smallDeckEdges.position.copy(smallDeck.position);
+    root.add(smallDeck, smallDeckEdges);
+
+    const traces = new THREE.Group();
+    traces.add(makeRectangle(6.4, 6.4, -0.02, gold, 0.22));
+    traces.add(makeRectangle(4.5, 4.5, 0.07, cyan, 0.32));
+    traces.add(makeLine([new THREE.Vector3(-3.2, 0, 0), new THREE.Vector3(3.1, 0, 0)], cyan, 0.38));
+    traces.add(makeLine([new THREE.Vector3(0, 0, -3.2), new THREE.Vector3(0, 0, 3.2)], gold, 0.34));
+    root.add(traces);
+
+    addBeacon(root, -2.4, -1.55, 1.4, gold);
+    addBeacon(root, 2.05, -1.95, 2.1, gold);
+    addBeacon(root, -2.7, 1.75, 0.95, gold);
+    addBeacon(root, 2.85, 1.55, 1.05, cyan);
+
+    const glow = new THREE.PointLight(gold, 2.2, 5);
+    glow.position.set(0, 1.4, 0);
+    scene.add(glow);
+    scene.add(new THREE.AmbientLight(0x7ee7ff, 0.65));
+
+    const animatedObjects: THREE.Object3D[] = [];
+    root.traverse((object) => {
+      if (object.userData.pulse) animatedObjects.push(object);
+    });
+
+    let frame = 0;
+    let animationId = 0;
+    let isVisible = true;
+
+    const resize = () => {
+      const { width, height } = host.getBoundingClientRect();
+      const safeWidth = Math.max(1, width);
+      const safeHeight = Math.max(1, height);
+      const aspect = safeWidth / safeHeight;
+      const frustum = compact ? 5.4 : 5.25;
+
+      camera.left = (-frustum * aspect) / 2;
+      camera.right = (frustum * aspect) / 2;
+      camera.top = frustum / 2;
+      camera.bottom = -frustum / 2;
+      camera.updateProjectionMatrix();
+      renderer.setSize(safeWidth, safeHeight, false);
+      renderer.render(scene, camera);
+    };
+
+    const observer = new ResizeObserver(resize);
+    observer.observe(host);
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = Boolean(entry?.isIntersecting);
+      },
+      { threshold: 0.08 },
+    );
+    visibilityObserver.observe(host);
+    resize();
+
+    const render = () => {
+      if (!isVisible) {
+        animationId = window.requestAnimationFrame(render);
+        return;
+      }
+
+      frame += 0.016;
+
+      if (!reduceMotion) {
+        root.rotation.y = Math.sin(frame * 0.32) * 0.055;
+        root.position.y = -0.35 + Math.sin(frame * 0.72) * 0.06;
+        glow.intensity = 1.8 + Math.sin(frame * 2.2) * 0.45;
+
+        for (const object of animatedObjects) {
+          const scale = 1 + Math.sin(frame * 2.1 + object.id) * 0.08;
+          object.scale.setScalar(scale);
+        }
+      }
+
+      renderer.render(scene, camera);
+      animationId = window.requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      window.cancelAnimationFrame(animationId);
+      host.classList.remove("cyber-scene--webgl");
+      observer.disconnect();
+      visibilityObserver.disconnect();
+      renderer.dispose();
+      scene.traverse((object) => {
+        if ("geometry" in object && object.geometry instanceof THREE.BufferGeometry) {
+          object.geometry.dispose();
+        }
+
+        if ("material" in object) {
+          const material = object.material;
+          const materials = Array.isArray(material) ? material : [material];
+          for (const item of materials) {
+            if (item instanceof THREE.Material) item.dispose();
+          }
+        }
+      });
+    };
+  }, [compact, variant]);
+
+  return (
+    <div
+      ref={hostRef}
+      className={cn("cyber-scene", compact && "min-h-72", className)}
+      data-variant={variant}
+      aria-hidden="true"
+    >
+      <div className="cyber-scene__sky" />
+      <canvas ref={canvasRef} className="cyber-scene__canvas" />
+      <div className="cyber-scene__horizon" />
+      <div className="cyber-scene__scan" />
+      <div className="cyber-scene__fallback-mark">РўРљ</div>
+    </div>
+  );
+}

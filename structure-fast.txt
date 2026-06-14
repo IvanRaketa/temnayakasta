@@ -1,0 +1,151 @@
+﻿=== ROOT ===
+
+Mode   Name                        
+----   ----                        
+d----- .tools                      
+d----- app                         
+d----- backups                     
+d----- components                  
+d----- docs                        
+d----- lib                         
+d----- prisma                      
+d----- public                      
+d----- scripts                     
+d----- styles                      
+d----- types                       
+-a---- .env                        
+-a---- .env.example                
+-a---- .gitignore                  
+-a---- .prettierignore             
+-a---- .prettierrc                 
+-a---- components.json             
+-a---- eslint.config.mjs           
+-a---- next-env.d.ts               
+-a---- next.config.ts              
+-a---- package-lock.json           
+-a---- package.json                
+-a---- postcss.config.mjs          
+-a---- prisma.config.ts            
+-a---- proxy.ts                    
+-a---- structure-fast.txt          
+-a---- tsconfig.json               
+-a---- tsconfig.tsbuildinfo        
+-a---- yandex_8809d55ed3ff7fef.html
+
+
+
+
+=== FOLDERS DEPTH 4 ===
+.tools
+app
+backups
+components
+docs
+lib
+prisma
+public
+scripts
+styles
+types
+  .tools\npm
+    .tools\npm\package
+      .tools\npm\package\bin
+      .tools\npm\package\docs
+      .tools\npm\package\lib
+      .tools\npm\package\man
+  app\(auth)
+  app\(main)
+  app\api
+  app\uploads
+    app\(auth)\forgot-password
+    app\(auth)\login
+    app\(auth)\register
+    app\(auth)\verify-email
+    app\(main)\admin
+    app\(main)\community-rules
+    app\(main)\consent
+    app\(main)\contacts
+    app\(main)\create
+    app\(main)\email-consent
+    app\(main)\feed
+    app\(main)\help
+    app\(main)\legal
+    app\(main)\moderation
+    app\(main)\new
+    app\(main)\notifications
+    app\(main)\personal-data
+    app\(main)\personal-data-operator
+    app\(main)\popular
+    app\(main)\post
+    app\(main)\premium
+    app\(main)\privacy
+    app\(main)\profile
+    app\(main)\reports
+    app\(main)\search
+    app\(main)\settings
+    app\(main)\tag
+    app\(main)\terms
+      app\(main)\admin\ads
+      app\(main)\feed\following
+      app\(main)\moderation\logs
+      app\(main)\moderation\queue
+      app\(main)\moderation\reports
+      app\(main)\moderation\users
+      app\(main)\post\[slug]
+      app\(main)\profile\[username]
+      app\(main)\settings\profile
+      app\(main)\settings\security
+      app\(main)\tag\[slug]
+    app\api\ads
+    app\api\interest-events
+    app\api\presence
+      app\api\ads\[id]
+    app\uploads\[...path]
+  backups\db
+  backups\project
+  components\ads
+  components\auth
+  components\comments
+  components\editor
+  components\layout
+  components\legal
+  components\navigation
+  components\posts
+  components\premium
+  components\presence
+  components\reports
+  components\search
+  components\settings
+  components\social
+  components\ui
+  components\visuals
+  lib\ads
+  lib\audit
+  lib\auth
+  lib\comments
+  lib\db
+  lib\email
+  lib\legal
+  lib\moderation
+  lib\notifications
+  lib\posts
+  lib\presence
+  lib\profile
+  lib\recommendations
+  lib\repositories
+  lib\request
+  lib\routing
+  lib\security
+  lib\services
+  lib\tags
+  prisma\migrations
+    prisma\migrations\20260604134000_init_data_foundation
+    prisma\migrations\20260604152000_auth_accounts_email_sessions
+    prisma\migrations\20260604210000_social_notifications_views_premium
+    prisma\migrations\20260604223000_tags_search_navigation
+    prisma\migrations\20260605093000_moderation_reports
+    prisma\migrations\20260605203000_public_launch_premium_legal
+    prisma\migrations\20260611162000_user_interest_events
+    prisma\migrations\20260611170000_user_interest_post_dislike
+    prisma\migrations\20260611183000_profile_island_achievements
+    prisma\migrations\20260611221000_advertisements

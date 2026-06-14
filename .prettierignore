@@ -1,0 +1,8 @@
+node_modules
+.next
+.tools
+out
+dist
+lib/generated
+package-lock.json
+*.log

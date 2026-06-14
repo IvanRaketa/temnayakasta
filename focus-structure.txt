@@ -1,0 +1,125 @@
+﻿=== app ROOT FILES ===
+
+Name         
+----         
+globals.css  
+layout.tsx   
+not-found.tsx
+
+
+
+
+=== app\(main) FILES ===
+
+Mode   Name                  
+----   ----                  
+d----- admin                 
+d----- community-rules       
+d----- consent               
+d----- contacts              
+d----- create                
+d----- email-consent         
+d----- feed                  
+d----- help                  
+d----- legal                 
+d----- moderation            
+d----- new                   
+d----- notifications         
+d----- personal-data         
+d----- personal-data-operator
+d----- popular               
+d----- post                  
+d----- premium               
+d----- privacy               
+d----- profile               
+d----- reports               
+d----- search                
+d----- settings              
+d----- tag                   
+d----- terms                 
+-a---- layout.tsx            
+-a---- page.tsx              
+
+
+
+
+=== app\(main) PAGE FILES ===
+
+FullName                                                              
+--------                                                              
+E:\temnayakasta120.ru\app\(main)\admin\ads\page.tsx                   
+E:\temnayakasta120.ru\app\(main)\admin\page.tsx                       
+E:\temnayakasta120.ru\app\(main)\community-rules\page.tsx             
+E:\temnayakasta120.ru\app\(main)\consent\page.tsx                     
+E:\temnayakasta120.ru\app\(main)\contacts\page.tsx                    
+E:\temnayakasta120.ru\app\(main)\create\page.tsx                      
+E:\temnayakasta120.ru\app\(main)\email-consent\page.tsx               
+E:\temnayakasta120.ru\app\(main)\feed\following\page.tsx              
+E:\temnayakasta120.ru\app\(main)\help\page.tsx                        
+E:\temnayakasta120.ru\app\(main)\legal\page.tsx                       
+E:\temnayakasta120.ru\app\(main)\moderation\logs\page.tsx             
+E:\temnayakasta120.ru\app\(main)\moderation\queue\page.tsx            
+E:\temnayakasta120.ru\app\(main)\moderation\reports\[id]\page.tsx     
+E:\temnayakasta120.ru\app\(main)\moderation\reports\page.tsx          
+E:\temnayakasta120.ru\app\(main)\moderation\users\page.tsx            
+E:\temnayakasta120.ru\app\(main)\moderation\page.tsx                  
+E:\temnayakasta120.ru\app\(main)\new\page.tsx                         
+E:\temnayakasta120.ru\app\(main)\notifications\page.tsx               
+E:\temnayakasta120.ru\app\(main)\personal-data\page.tsx               
+E:\temnayakasta120.ru\app\(main)\personal-data-operator\page.tsx      
+E:\temnayakasta120.ru\app\(main)\popular\page.tsx                     
+E:\temnayakasta120.ru\app\(main)\post\[slug]\edit\page.tsx            
+E:\temnayakasta120.ru\app\(main)\post\[slug]\page.tsx                 
+E:\temnayakasta120.ru\app\(main)\premium\page.tsx                     
+E:\temnayakasta120.ru\app\(main)\privacy\page.tsx                     
+E:\temnayakasta120.ru\app\(main)\profile\[username]\followers\page.tsx
+E:\temnayakasta120.ru\app\(main)\profile\[username]\following\page.tsx
+E:\temnayakasta120.ru\app\(main)\profile\[username]\island\page.tsx   
+E:\temnayakasta120.ru\app\(main)\profile\[username]\page.tsx          
+E:\temnayakasta120.ru\app\(main)\profile\page.tsx                     
+E:\temnayakasta120.ru\app\(main)\search\page.tsx                      
+E:\temnayakasta120.ru\app\(main)\settings\profile\page.tsx            
+E:\temnayakasta120.ru\app\(main)\settings\security\page.tsx           
+E:\temnayakasta120.ru\app\(main)\settings\page.tsx                    
+E:\temnayakasta120.ru\app\(main)\tag\[slug]\page.tsx                  
+E:\temnayakasta120.ru\app\(main)\terms\page.tsx                       
+E:\temnayakasta120.ru\app\(main)\layout.tsx                           
+E:\temnayakasta120.ru\app\(main)\page.tsx                             
+
+
+
+
+=== components\visuals ===
+
+Mode   FullName                                                              
+----   --------                                                              
+-a---- E:\temnayakasta120.ru\components\visuals\cyber-fortress-scene.tsx     
+-a---- E:\temnayakasta120.ru\components\visuals\lazy-cyber-fortress-scene.tsx
+
+
+
+
+=== components\layout ===
+
+Mode   FullName                                                    
+----   --------                                                    
+-a---- E:\temnayakasta120.ru\components\layout\app-shell.tsx       
+-a---- E:\temnayakasta120.ru\components\layout\footer.tsx          
+-a---- E:\temnayakasta120.ru\components\layout\mobile-nav.tsx      
+-a---- E:\temnayakasta120.ru\components\layout\nav-link.tsx        
+-a---- E:\temnayakasta120.ru\components\layout\placeholder-page.tsx
+-a---- E:\temnayakasta120.ru\components\layout\sidebar.tsx         
+-a---- E:\temnayakasta120.ru\components\layout\top-nav.tsx         
+
+
+
+
+=== styles ===
+
+Mode   FullName                              
+----   --------                              
+-a---- E:\temnayakasta120.ru\styles\.gitkeep 
+-a---- E:\temnayakasta120.ru\styles\theme.css
+
+
+
