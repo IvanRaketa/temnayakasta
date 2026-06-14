@@ -1,9 +1,5 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
-
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
@@ -36,7 +32,7 @@ import { validateImageUpload } from "@/lib/uploads/image-validation";
 
 const BIO_MAX_LENGTH = 500;
 const DISPLAY_NAME_MAX_LENGTH = 50;
-const AVATAR_MAX_SIZE = 2 * 1024 * 1024;
+const AVATAR_MAX_SIZE = 1 * 1024 * 1024;
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const avatarImageTypes = new Set(["jpg", "png", "webp"] as const);
 
@@ -82,18 +78,13 @@ async function saveAvatar(file: File) {
     return {
       error:
         image.reason === "file_too_large"
-          ? "Аватар должен быть не больше 2 МБ."
+          ? "Аватар должен быть не больше 1 МБ."
           : "Поддерживаются только JPG, PNG и WebP без SVG/скриптов.",
       reason: `avatar_${image.reason}`,
     };
   }
 
-  const uploadDir = path.join(process.cwd(), "public", "uploads", "avatars");
-  const fileName = `${randomUUID()}.${image.extension}`;
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(path.join(uploadDir, fileName), image.bytes);
-
-  return { url: `/uploads/avatars/${fileName}` };
+  return { url: `data:${image.mimeType};base64,${image.bytes.toString("base64")}` };
 }
 
 export async function updateProfileAction(
@@ -168,8 +159,8 @@ export async function updateProfileAction(
     const avatar = await saveAvatar(avatarFile).catch((error) => {
       console.error("[settings/profile] Avatar upload failed", error);
       return {
-        error: "Максимальный размер аватара — 2 МБ.",
-        reason: "avatar_write_failed",
+        error: "Не удалось обработать аватар. Используйте JPG, PNG или WebP до 1 МБ.",
+        reason: "avatar_processing_failed",
       };
     });
     if (avatar?.error) {
@@ -248,7 +239,7 @@ export async function updateProfileAction(
             userAgent: context.userAgent,
             route: context.route,
             method: context.method,
-            metadata: { avatar: avatarUrl },
+            metadata: { avatarStoredAs: "data_url", maxSizeBytes: AVATAR_MAX_SIZE },
           },
         });
       }
