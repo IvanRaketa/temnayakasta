@@ -19,7 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getCurrentSessionReadOnly } from "@/lib/auth/session-read";
 import { db } from "@/lib/db";
-import { AdPlacement, CommentStatus, PostStatus } from "@/lib/generated/prisma/client";
+import { AdPlacement, CommentStatus, PostStatus, type Prisma } from "@/lib/generated/prisma/client";
 import { presenceStore } from "@/lib/presence/store";
 import { getHomeRecommendations } from "@/lib/recommendations/home-recommendations";
 
@@ -32,6 +32,23 @@ export const metadata: Metadata = {
 };
 
 const HOME_POST_LIMIT = 10;
+
+const homePostInclude = {
+  author: {
+    select: {
+      username: true,
+      avatar: true,
+      premiumUntil: true,
+      profile: { select: { displayName: true, avatar: true, premiumNameEffect: true } },
+    },
+  },
+  _count: { select: { comments: true, reactions: true, views: true } },
+  reactions: { select: { type: true } },
+  tags: { include: { tag: { select: { id: true, name: true, slug: true } } } },
+} satisfies Prisma.PostInclude;
+
+type HomeFeedPost = Prisma.PostGetPayload<{ include: typeof homePostInclude }>;
+type HomeFeedItem = { post: HomeFeedPost; reason: string };
 
 function formatNumber(value: number) {
   return new Intl.NumberFormat("ru-RU", {
@@ -63,9 +80,57 @@ async function getHomeStats() {
   };
 }
 
+async function getStarterHomeFeed(limit: number): Promise<HomeFeedItem[]> {
+  const safeLimit = Math.max(1, Math.min(limit, 20));
+  const where = {
+    status: PostStatus.PUBLISHED,
+    publishedAt: { not: null },
+    author: { deletedAt: null },
+  } satisfies Prisma.PostWhereInput;
+
+  const [recentPosts, activePosts] = await Promise.all([
+    db.post.findMany({
+      where,
+      orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+      take: safeLimit,
+      include: homePostInclude,
+    }),
+    db.post.findMany({
+      where,
+      orderBy: [
+        { reactions: { _count: "desc" } },
+        { comments: { _count: "desc" } },
+        { views: { _count: "desc" } },
+        { publishedAt: "desc" },
+      ],
+      take: safeLimit,
+      include: homePostInclude,
+    }),
+  ]);
+
+  const items: HomeFeedItem[] = [];
+  const usedIds = new Set<string>();
+  const pushPost = (post: HomeFeedPost, reason: string) => {
+    if (items.length >= safeLimit || usedIds.has(post.id)) return;
+    usedIds.add(post.id);
+    items.push({ post, reason });
+  };
+
+  for (let index = 0; index < safeLimit; index += 1) {
+    const recentPost = recentPosts[index];
+    const activePost = activePosts[index];
+
+    if (recentPost) pushPost(recentPost, "новое в ленте");
+    if (activePost) pushPost(activePost, "популярно сейчас");
+  }
+
+  return items;
+}
+
 export default async function HomePage() {
   const current = await getCurrentSessionReadOnly();
   let recommendations: Awaited<ReturnType<typeof getHomeRecommendations>> = [];
+  let starterFeed: HomeFeedItem[] = [];
   let stats: Awaited<ReturnType<typeof getHomeStats>> = {
     online: 0,
     posts: 0,
@@ -79,11 +144,17 @@ export default async function HomePage() {
       getHomeRecommendations(current?.user.id, HOME_POST_LIMIT),
       getHomeStats(),
     ]);
+
+    if (recommendations.length === 0) {
+      starterFeed = await getStarterHomeFeed(HOME_POST_LIMIT);
+    }
   } catch (error) {
     databaseError = true;
     console.error(error);
   }
 
+  const feedItems = recommendations.length > 0 ? recommendations : starterFeed;
+  const isPersonalFeed = recommendations.length > 0;
   const primaryCta = current
     ? { href: "/create", label: "Создать пост" }
     : { href: "/register", label: "Войти в касту" };
@@ -169,28 +240,29 @@ export default async function HomePage() {
             </p>
           </CardContent>
         </Card>
-      ) : recommendations.length > 0 ? (
+      ) : feedItems.length > 0 ? (
         <section className="space-y-4">
           <div className="w-full md:mx-auto md:max-w-[44rem]">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="tk-kicker">Лента</p>
                 <h2 className="mt-3 text-2xl font-semibold leading-tight text-foreground md:text-[1.75rem]">
-                  Рекомендовано для тебя
+                  {isPersonalFeed ? "Рекомендовано для тебя" : "Стартовая лента"}
                 </h2>
+                {!isPersonalFeed ? (
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    Пока алгоритм мало знает о тебе, поэтому здесь смесь свежих и популярных постов.
+                  </p>
+                ) : null}
               </div>
               <span className="tk-pill w-fit">
                 <Users className="size-3.5 text-primary" />
-                социальная лента
+                {isPersonalFeed ? "социальная лента" : "новое + популярное"}
               </span>
             </div>
           </div>
-          {recommendations.map((recommendation) => (
-            <PostCard
-              key={recommendation.post.id}
-              post={recommendation.post}
-              recommendationReason={recommendation.reason}
-            />
+          {feedItems.map((item) => (
+            <PostCard key={item.post.id} post={item.post} recommendationReason={item.reason} />
           ))}
         </section>
       ) : (
