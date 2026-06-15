@@ -50,7 +50,7 @@ export function CommentForm({ slug, isAuthenticated, isVerified = true }: Commen
 
     const refreshAgain = window.setTimeout(() => router.refresh(), 350);
     return () => window.clearTimeout(refreshAgain);
-  }, [resetActivity, router, state.ok]);
+  }, [resetActivity, router, state]);
 
   if (!isAuthenticated) {
     return (
