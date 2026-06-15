@@ -6,16 +6,16 @@ import { Button } from "@/components/ui/button";
 export function TopNav({ unreadCount }: { unreadCount: number }) {
   return (
     <header className="sticky top-0 z-30 border-b border-border/70 bg-background/72 backdrop-blur-xl">
-      <div className="mx-auto flex h-14 w-full max-w-[1380px] items-center gap-2.5 px-4 md:px-5">
+      <div className="mx-auto flex h-16 w-full max-w-[1380px] items-center gap-3 px-4 md:h-14 md:gap-2.5 md:px-5">
         <Link
           href="/"
-          className="group flex min-w-fit items-center gap-2.5"
+          className="group flex min-w-fit items-center gap-3 md:gap-2.5"
           aria-label="Тёмная Каста"
         >
-          <span className="grid size-8 place-items-center rounded-xl border border-primary/40 bg-primary/10 text-primary shadow-[0_0_18px_rgba(246,205,96,0.14)] transition group-hover:border-primary/70">
-            <Castle className="size-4" />
+          <span className="grid size-10 place-items-center rounded-xl border border-primary/40 bg-primary/10 text-primary shadow-[0_0_22px_rgba(246,205,96,0.16)] transition group-hover:border-primary/70 md:size-8 md:shadow-[0_0_18px_rgba(246,205,96,0.14)]">
+            <Castle className="size-5 md:size-4" />
           </span>
-          <span className="hidden text-sm font-semibold leading-none text-foreground sm:inline">
+          <span className="hidden text-base font-semibold leading-none text-foreground sm:inline md:text-sm">
             Тёмная Каста
           </span>
         </Link>
@@ -30,7 +30,7 @@ export function TopNav({ unreadCount }: { unreadCount: number }) {
           asChild
           variant="secondary"
           size="icon"
-          className="ml-auto size-9"
+          className="ml-auto md:size-9"
           aria-label="Уведомления"
         >
           <Link href="/notifications" className="relative">
