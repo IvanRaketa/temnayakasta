@@ -17,12 +17,17 @@ export async function AdSlot({
 }) {
   if (isPremiumActive(currentUser)) return null;
 
-  const ad = await getActiveAd(placement);
-  if (!ad) return null;
+  try {
+    const ad = await getActiveAd(placement);
+    if (!ad) return null;
 
-  return (
-    <AdImpressionTracker adId={ad.id}>
-      <AdCard ad={ad} compact={compact} />
-    </AdImpressionTracker>
-  );
+    return (
+      <AdImpressionTracker adId={ad.id}>
+        <AdCard ad={ad} compact={compact} />
+      </AdImpressionTracker>
+    );
+  } catch (error) {
+    console.error("Failed to load advertisement slot.", error);
+    return null;
+  }
 }
