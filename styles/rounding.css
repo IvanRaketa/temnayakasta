@@ -96,30 +96,114 @@
   border-bottom-right-radius: var(--tk-radius-2xl);
 }
 
+.rounded-l,
 .rounded-l-md {
   border-top-left-radius: var(--tk-radius-md);
   border-bottom-left-radius: var(--tk-radius-md);
 }
 
+.rounded-l-lg {
+  border-top-left-radius: var(--tk-radius-lg);
+  border-bottom-left-radius: var(--tk-radius-lg);
+}
+
+.rounded-l-xl {
+  border-top-left-radius: var(--tk-radius-xl);
+  border-bottom-left-radius: var(--tk-radius-xl);
+}
+
+.rounded-l-2xl {
+  border-top-left-radius: var(--tk-radius-2xl);
+  border-bottom-left-radius: var(--tk-radius-2xl);
+}
+
+.rounded-r,
 .rounded-r-md {
   border-top-right-radius: var(--tk-radius-md);
   border-bottom-right-radius: var(--tk-radius-md);
 }
 
+.rounded-r-lg {
+  border-top-right-radius: var(--tk-radius-lg);
+  border-bottom-right-radius: var(--tk-radius-lg);
+}
+
+.rounded-r-xl {
+  border-top-right-radius: var(--tk-radius-xl);
+  border-bottom-right-radius: var(--tk-radius-xl);
+}
+
+.rounded-r-2xl {
+  border-top-right-radius: var(--tk-radius-2xl);
+  border-bottom-right-radius: var(--tk-radius-2xl);
+}
+
+.rounded-tl,
 .rounded-tl-md {
   border-top-left-radius: var(--tk-radius-md);
 }
 
+.rounded-tl-lg {
+  border-top-left-radius: var(--tk-radius-lg);
+}
+
+.rounded-tl-xl {
+  border-top-left-radius: var(--tk-radius-xl);
+}
+
+.rounded-tl-2xl {
+  border-top-left-radius: var(--tk-radius-2xl);
+}
+
+.rounded-tr,
 .rounded-tr-md {
   border-top-right-radius: var(--tk-radius-md);
 }
 
+.rounded-tr-lg {
+  border-top-right-radius: var(--tk-radius-lg);
+}
+
+.rounded-tr-xl {
+  border-top-right-radius: var(--tk-radius-xl);
+}
+
+.rounded-tr-2xl {
+  border-top-right-radius: var(--tk-radius-2xl);
+}
+
+.rounded-bl,
 .rounded-bl-md {
   border-bottom-left-radius: var(--tk-radius-md);
 }
 
+.rounded-bl-lg {
+  border-bottom-left-radius: var(--tk-radius-lg);
+}
+
+.rounded-bl-xl {
+  border-bottom-left-radius: var(--tk-radius-xl);
+}
+
+.rounded-bl-2xl {
+  border-bottom-left-radius: var(--tk-radius-2xl);
+}
+
+.rounded-br,
 .rounded-br-md {
   border-bottom-right-radius: var(--tk-radius-md);
+}
+
+.rounded-br-lg {
+  border-bottom-right-radius: var(--tk-radius-lg);
+}
+
+.rounded-br-xl {
+  border-bottom-right-radius: var(--tk-radius-xl);
+}
+
+.rounded-br-2xl {
+  border-bottom-right-radius: var(--tk-radius-2xl);
 }
 
 .rounded-full {
@@ -146,9 +230,4 @@ textarea,
 select,
 [role="textbox"] {
   border-radius: var(--tk-radius-md);
-}
-
-button,
-a[role="button"] {
-  border-radius: inherit;
 }
