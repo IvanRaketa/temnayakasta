@@ -90,7 +90,7 @@ export function PostCard({
   return (
     <Card
       className={cn(
-        "post-card-enter group mx-auto w-full max-w-4xl overflow-hidden rounded-2xl tk-hover-lift hover:border-primary/30",
+        "post-card-enter group mx-auto w-full max-w-3xl overflow-hidden rounded-2xl tk-hover-lift hover:border-primary/30",
         featured && "tk-pinned-post",
       )}
     >
@@ -107,17 +107,16 @@ export function PostCard({
         <Link
           href={postPath}
           aria-label={`Открыть: ${post.title}`}
-          className="relative block h-44 overflow-hidden border-b border-border bg-secondary sm:h-56 lg:h-64 xl:h-72"
+          className="flex justify-center overflow-hidden border-b border-border bg-secondary/60 p-2 sm:p-3"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={thumbnailSrc}
             alt=""
-            className="size-full object-cover transition duration-500 group-hover:scale-[1.025]"
+            className="h-auto max-h-[340px] w-auto max-w-full object-contain transition duration-300 group-hover:opacity-95 sm:max-h-[420px] lg:max-h-[460px]"
             loading="lazy"
             decoding="async"
           />
-          <span className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
         </Link>
       ) : null}
       <CardHeader className="space-y-3 px-4 py-4 sm:px-5 sm:py-5">
