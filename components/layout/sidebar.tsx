@@ -39,7 +39,7 @@ export function Sidebar({ currentUser }: { currentUser: SidebarUser }) {
 
   return (
     <aside className="hidden md:block">
-      <nav className="tk-glass sticky top-20 space-y-1 rounded-lg p-2">
+      <nav className="tk-glass sticky top-20 space-y-1 rounded-2xl p-2">
         {visibleItems.map((item) => (
           <NavLink
             key={item.href}
