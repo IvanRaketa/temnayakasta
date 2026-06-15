@@ -6,7 +6,7 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   return (
     <div
       className={cn(
-        "tk-glass rounded-lg text-card-foreground transition-[border-color,box-shadow,transform] duration-200",
+        "tk-glass rounded-xl text-card-foreground transition-[border-color,box-shadow,transform] duration-200",
         className,
       )}
       {...props}
