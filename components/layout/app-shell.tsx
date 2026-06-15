@@ -1,3 +1,4 @@
+import type React from "react";
 import Link from "next/link";
 
 import { Footer } from "@/components/layout/footer";
@@ -8,12 +9,30 @@ import { canModerate, isAdmin } from "@/lib/auth/roles";
 import { getCurrentSessionReadOnly } from "@/lib/auth/session-read";
 import { db } from "@/lib/db";
 
+async function readShellSession() {
+  try {
+    return await getCurrentSessionReadOnly();
+  } catch (error) {
+    console.error("Shell session lookup failed.", error);
+    return null;
+  }
+}
+
+async function readUnreadCount(userId?: string) {
+  if (!userId) return 0;
+
+  try {
+    return await db.notification.count({ where: { userId, isRead: false } });
+  } catch (error) {
+    console.error("Unread notification count lookup failed.", error);
+    return 0;
+  }
+}
+
 export async function AppShell({ children }: Readonly<{ children: React.ReactNode }>) {
-  const current = await getCurrentSessionReadOnly();
+  const current = await readShellSession();
   const currentUser = current?.user ?? null;
-  const unreadCount = current
-    ? await db.notification.count({ where: { userId: current.user.id, isRead: false } })
-    : 0;
+  const unreadCount = await readUnreadCount(current?.user.id);
 
   return (
     <div className="tk-shell-surface min-h-screen bg-background">
