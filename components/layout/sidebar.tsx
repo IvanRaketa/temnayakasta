@@ -39,7 +39,7 @@ export function Sidebar({ currentUser }: { currentUser: SidebarUser }) {
 
   return (
     <aside className="hidden md:block">
-      <nav className="tk-glass sticky top-16 space-y-1 rounded-2xl p-1.5">
+      <nav className="tk-glass sticky top-20 space-y-1 rounded-2xl p-2">
         {visibleItems.map((item) => (
           <NavLink
             key={item.href}
@@ -49,7 +49,7 @@ export function Sidebar({ currentUser }: { currentUser: SidebarUser }) {
             exact={item.exact}
           />
         ))}
-        <div className="pt-2">
+        <div className="pt-3">
           <AdRouteGate>
             <AdSlot placement={AdPlacement.SIDEBAR} currentUser={currentUser} compact />
           </AdRouteGate>
