@@ -1,7 +1,43 @@
 import Link from "next/link";
-import { Bell, Castle, Search } from "lucide-react";
+import { Bell, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+
+function SiteLogoMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 64 64"
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M32 7c-8.2 3.4-14.4 10.1-18.4 19.7 2.1 10.9 8.3 19.3 18.4 25.3 10.1-6 16.3-14.4 18.4-25.3C46.4 17.1 40.2 10.4 32 7Z"
+        fill="currentColor"
+        fillOpacity="0.12"
+      />
+      <path
+        d="M32 7c-8.2 3.4-14.4 10.1-18.4 19.7 2.1 10.9 8.3 19.3 18.4 25.3 10.1-6 16.3-14.4 18.4-25.3C46.4 17.1 40.2 10.4 32 7Z"
+        stroke="currentColor"
+        strokeWidth="3.4"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M16.5 45.2 7.5 52l15.7-3.2M47.5 45.2 56.5 52l-15.7-3.2"
+        stroke="currentColor"
+        strokeWidth="3.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M21.2 33.2c4.2-1.7 7.6-1.4 10.2.9-4.8 2-8.3 1.7-10.2-.9Zm21.6 0c-4.2-1.7-7.6-1.4-10.2.9 4.8 2 8.3 1.7 10.2-.9Z"
+        fill="currentColor"
+      />
+      <path d="M32 47.2 35.4 52 32 56.8 28.6 52 32 47.2Z" fill="currentColor" />
+    </svg>
+  );
+}
 
 export function TopNav({ unreadCount }: { unreadCount: number }) {
   return (
@@ -12,8 +48,8 @@ export function TopNav({ unreadCount }: { unreadCount: number }) {
           className="group flex min-w-fit items-center gap-3"
           aria-label="Тёмная Каста"
         >
-          <span className="grid size-10 place-items-center rounded-xl border border-primary/40 bg-primary/10 text-primary shadow-[0_0_22px_rgba(246,205,96,0.16)] transition group-hover:border-primary/70">
-            <Castle className="size-5" />
+          <span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary shadow-[0_0_18px_rgba(246,205,96,0.12)] transition group-hover:bg-primary/15">
+            <SiteLogoMark className="size-7" />
           </span>
           <span className="hidden text-base font-semibold leading-none text-foreground sm:inline">
             Тёмная Каста
