@@ -231,3 +231,17 @@ select,
 [role="textbox"] {
   border-radius: var(--tk-radius-md);
 }
+
+@media (min-width: 768px) {
+  section:has(> .post-card-enter) > h2 {
+    width: min(100%, 44rem);
+    margin-inline: auto;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  section:has(> .post-card-enter) > h2.inline-flex {
+    display: flex;
+  }
+}
