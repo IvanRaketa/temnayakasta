@@ -38,8 +38,8 @@ export async function AppShell({ children }: Readonly<{ children: React.ReactNod
     <div className="tk-shell-surface min-h-screen bg-background">
       <TopNav unreadCount={unreadCount} />
       {current && !current.user.emailVerified ? (
-        <div className="border-b border-primary/30 bg-primary/15 px-4 py-3 text-sm text-foreground backdrop-blur">
-          <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="border-b border-primary/30 bg-primary/15 px-4 py-2.5 text-sm text-foreground backdrop-blur">
+          <div className="mx-auto flex w-full max-w-[1380px] flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <span className="font-medium">Подтвердите e-mail для полного доступа</span>
             <Link
               href={`/verify-email?email=${encodeURIComponent(current.user.email)}`}
@@ -50,7 +50,7 @@ export async function AppShell({ children }: Readonly<{ children: React.ReactNod
           </div>
         </div>
       ) : null}
-      <div className="mx-auto grid w-full max-w-7xl grid-cols-1 px-4 pb-24 pt-4 md:grid-cols-[236px_minmax(0,1fr)] md:gap-6 md:px-6 md:pb-8">
+      <div className="mx-auto grid w-full max-w-[1380px] grid-cols-1 px-4 pb-24 pt-3 md:grid-cols-[200px_minmax(0,1fr)] md:gap-4 md:px-5 md:pb-8 md:pt-4 xl:grid-cols-[196px_minmax(0,1fr)]">
         <Sidebar currentUser={currentUser} />
         <main className="min-w-0">{children}</main>
       </div>
