@@ -50,7 +50,7 @@ export function ReplyForm({ slug, parentId, onDone }: ReplyFormProps) {
 
     const refreshAgain = window.setTimeout(() => router.refresh(), 350);
     return () => window.clearTimeout(refreshAgain);
-  }, [onDone, resetActivity, router, state.ok]);
+  }, [onDone, resetActivity, router, state]);
 
   return (
     <form
