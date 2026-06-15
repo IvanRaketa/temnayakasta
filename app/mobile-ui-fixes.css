@@ -1,0 +1,18 @@
+@media (max-width: 640px) {
+  .tk-glass-strong.absolute:has(.EmojiPickerReact) {
+    position: fixed !important;
+    inset-inline: max(0.75rem, env(safe-area-inset-left)) max(0.75rem, env(safe-area-inset-right)) !important;
+    top: calc(env(safe-area-inset-top) + 5.25rem) !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: calc(100svh - env(safe-area-inset-top) - 8.75rem);
+    overflow: hidden;
+    z-index: 80;
+  }
+
+  .tk-glass-strong.absolute:has(.EmojiPickerReact) .EmojiPickerReact {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: min(21rem, calc(100svh - env(safe-area-inset-top) - 9.25rem)) !important;
+  }
+}
