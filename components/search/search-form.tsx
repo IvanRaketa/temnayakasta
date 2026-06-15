@@ -26,7 +26,7 @@ export function SearchForm({ initialQuery = "" }: { initialQuery?: string }) {
         maxLength={80}
         onChange={(event) => setQuery(event.target.value)}
         placeholder="Посты, авторы, теги"
-        className="h-10 min-w-0 flex-1 rounded-md border border-input bg-background/70 px-3 text-sm text-foreground outline-none backdrop-blur transition focus-visible:ring-2 focus-visible:ring-ring"
+        className="h-10 min-w-0 flex-1 rounded-xl border border-input bg-background/70 px-3 text-sm text-foreground outline-none backdrop-blur transition focus-visible:ring-2 focus-visible:ring-ring"
       />
       <Button disabled={pending} className="w-full sm:w-auto">
         <Search className="size-4" />
