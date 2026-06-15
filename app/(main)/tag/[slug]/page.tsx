@@ -31,7 +31,7 @@ export default async function TagPage({ params }: TagPageProps) {
     where: { slug: decodedSlug },
     include: {
       posts: {
-        where: { post: { status: PostStatus.PUBLISHED } },
+        where: { post: { status: PostStatus.PUBLISHED, author: { deletedAt: null } } },
         orderBy: { post: { publishedAt: "desc" } },
         include: {
           post: {
