@@ -13,7 +13,7 @@ export default function AuthLayout({ children }: Readonly<{ children: React.Reac
           href="/"
           className="mx-auto mb-6 flex w-fit flex-col items-center gap-3 text-center text-foreground"
         >
-          <span className="grid size-12 place-items-center rounded-md border border-primary/45 bg-primary/10 text-primary shadow-[0_0_28px_rgba(246,205,96,0.16)]">
+          <span className="grid size-12 place-items-center rounded-2xl border border-primary/45 bg-primary/10 text-primary shadow-[0_0_28px_rgba(246,205,96,0.16)]">
             <Castle className="size-6" />
           </span>
           <span>
