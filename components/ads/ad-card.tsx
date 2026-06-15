@@ -16,7 +16,7 @@ export function AdCard({ ad, compact = false }: { ad: ActiveAdvertisement; compa
     <section
       aria-label="Реклама"
       className={cn(
-        "tk-glass overflow-hidden rounded-lg border border-primary/20 shadow-[0_18px_50px_rgba(0,0,0,0.16)] transition hover:border-primary/40",
+        "tk-glass overflow-hidden rounded-2xl border border-primary/20 shadow-[0_18px_50px_rgba(0,0,0,0.16)] transition hover:border-primary/40",
         compact ? "text-sm" : "text-base",
       )}
     >
