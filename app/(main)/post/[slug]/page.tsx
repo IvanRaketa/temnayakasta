@@ -167,7 +167,12 @@ export default async function PostPage({ params }: PostPageProps) {
                 </Button>
                 {authorPremiumActive && post.status === PostStatus.PUBLISHED ? (
                   <div className="px-0 py-1">
-                    <PinPostButton postId={post.id} isPinned={post.author.profile?.pinnedPostId === post.id} className="h-9 w-full justify-start rounded-xl px-3" />
+                    <PinPostButton
+                      postId={post.id}
+                      isPinned={post.author.profile?.pinnedPostId === post.id}
+                      className="w-full"
+                      buttonClassName="h-9 w-full justify-start rounded-xl border-transparent bg-transparent px-3 text-muted-foreground shadow-none hover:border-border hover:bg-secondary/70 hover:text-foreground"
+                    />
                   </div>
                 ) : null}
                 <form action={deletePostAction}>
