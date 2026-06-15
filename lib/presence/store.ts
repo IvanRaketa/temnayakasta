@@ -249,7 +249,9 @@ class PresenceStore {
     return {
       pulse: {
         usersOnline: unique(() => true),
-        activeAuthors: unique((session) => session.activity === "creating_post"),
+        activeAuthors: unique(
+          (session) => Boolean(session.userId) || session.activity === "creating_post",
+        ),
         activeReaders: unique((session) => session.scope === "post"),
         openPosts: new Set(
           sessions
