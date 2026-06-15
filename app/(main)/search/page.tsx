@@ -71,10 +71,11 @@ export default async function SearchPage({
           db.post.findMany({
             where: {
               status: PostStatus.PUBLISHED,
+              author: { deletedAt: null },
               OR: [
                 { title: { contains: q, mode: "insensitive" } },
                 { content: { contains: q, mode: "insensitive" } },
-                { author: { username: { contains: q, mode: "insensitive" } } },
+                { author: { username: { contains: q, mode: "insensitive" }, deletedAt: null } },
                 { tags: { some: { tag: { name: { contains: q, mode: "insensitive" } } } } },
                 { tags: { some: { tag: { slug: { contains: q, mode: "insensitive" } } } } },
               ],
@@ -101,12 +102,7 @@ export default async function SearchPage({
             take: RESULT_LIMIT,
             include: {
               profile: true,
-              _count: {
-                select: {
-                  followers: true,
-                  posts: { where: { status: PostStatus.PUBLISHED } },
-                },
-              },
+              _count: { select: { followers: true, posts: { where: { status: PostStatus.PUBLISHED } } } },
             },
           }),
           db.tag.findMany({
@@ -117,9 +113,7 @@ export default async function SearchPage({
               ],
             },
             take: RESULT_LIMIT,
-            include: {
-              _count: { select: { posts: true } },
-            },
+            include: { _count: { select: { posts: true } } },
           }),
         ])
       : [[], [], []];
@@ -129,35 +123,16 @@ export default async function SearchPage({
   return (
     <div className="space-y-5">
       <Card className="tk-glass-strong">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="size-5" />
-            Поиск
-          </CardTitle>
-        </CardHeader>
+        <CardHeader><CardTitle className="flex items-center gap-2"><Search className="size-5" />Поиск</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <SearchForm initialQuery={q} />
-          {tooShort ? (
-            <p className="text-sm text-destructive">Введите минимум {MIN_QUERY_LENGTH} символа.</p>
-          ) : null}
-          {searchBlockedMessage ? (
-            <p className="text-sm text-destructive">{searchBlockedMessage}</p>
-          ) : null}
-          {!q ? (
-            <p className="text-sm text-muted-foreground">
-              Ищите публикации, авторов и теги. Запрос хранится в URL.
-            </p>
-          ) : null}
+          {tooShort ? <p className="text-sm text-destructive">Введите минимум {MIN_QUERY_LENGTH} символа.</p> : null}
+          {searchBlockedMessage ? <p className="text-sm text-destructive">{searchBlockedMessage}</p> : null}
+          {!q ? <p className="text-sm text-muted-foreground">Ищите публикации, авторов и теги. Запрос хранится в URL.</p> : null}
         </CardContent>
       </Card>
 
-      {empty ? (
-        <Card>
-          <CardContent className="p-5">
-            <p className="text-sm leading-6 text-muted-foreground">Ничего не найдено.</p>
-          </CardContent>
-        </Card>
-      ) : null}
+      {empty ? <Card><CardContent className="p-5"><p className="text-sm leading-6 text-muted-foreground">Ничего не найдено.</p></CardContent></Card> : null}
 
       {posts.length > 0 ? (
         <section className="space-y-3">
@@ -165,36 +140,13 @@ export default async function SearchPage({
           {posts.map((post) => (
             <Card key={post.id}>
               <CardContent className="space-y-3 p-4">
-                <Link
-                  href={getPostPath(post)}
-                  className="block break-words text-lg font-semibold text-foreground hover:text-primary"
-                >
-                  {post.title}
-                </Link>
-                <p className="break-words text-sm leading-6 text-muted-foreground">
-                  {createPostExcerpt(post.content, 180)}
-                </p>
+                <Link href={getPostPath(post)} className="block break-words text-lg font-semibold text-foreground hover:text-primary">{post.title}</Link>
+                <p className="break-words text-sm leading-6 text-muted-foreground">{createPostExcerpt(post.content, 180)}</p>
                 <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-                  <Link href={`/profile/${post.author.username}`} className="hover:text-primary">
-                    @{post.author.username}
-                  </Link>
-                  <span>{post._count.views} просмотров</span>
-                  <span>{post._count.reactions} реакций</span>
-                  <span>{post._count.comments} комментариев</span>
+                  <Link href={`/profile/${post.author.username}`} className="hover:text-primary">@{post.author.username}</Link>
+                  <span>{post._count.views} просмотров</span><span>{post._count.reactions} реакций</span><span>{post._count.comments} комментариев</span>
                 </div>
-                {post.tags.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {post.tags.map(({ tag }) => (
-                      <Link
-                        key={tag.slug}
-                        href={`/tag/${tag.slug}`}
-                        className="tk-pill max-w-full hover:text-foreground"
-                      >
-                        <span className="block max-w-40 truncate">#{tag.name}</span>
-                      </Link>
-                    ))}
-                  </div>
-                ) : null}
+                {post.tags.length > 0 ? <div className="flex flex-wrap gap-2">{post.tags.map(({ tag }) => <Link key={tag.slug} href={`/tag/${tag.slug}`} className="tk-pill max-w-full hover:text-foreground"><span className="block max-w-40 truncate">#{tag.name}</span></Link>)}</div> : null}
               </CardContent>
             </Card>
           ))}
@@ -209,32 +161,13 @@ export default async function SearchPage({
               <Card key={user.id}>
                 <CardContent className="flex min-w-0 flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
-                    <Link
-                      href={`/profile/${user.username}`}
-                      className="block truncate text-sm font-semibold text-foreground hover:text-primary"
-                    >
-                      @{user.username}
-                    </Link>
-                    <p className="line-clamp-2 break-words text-sm text-muted-foreground">
-                      {user.profile?.bio || user.bio || "Без описания"}
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {user._count.followers} подписчиков · {user._count.posts} постов
-                    </p>
+                    <Link href={`/profile/${user.username}`} className="block truncate text-sm font-semibold text-foreground hover:text-primary">@{user.username}</Link>
+                    <p className="line-clamp-2 break-words text-sm text-muted-foreground">{user.profile?.bio || user.bio || "Без описания"}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{user._count.followers} подписчиков · {user._count.posts} постов</p>
                   </div>
                   <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-                    <Button asChild variant="secondary" className="w-full sm:w-auto">
-                      <Link href={`/profile/${user.username}`}>Профиль</Link>
-                    </Button>
-                    <FollowButton
-                      targetUserId={user.id}
-                      targetUsername={user.username}
-                      isAuthenticated={Boolean(current)}
-                      isVerified={Boolean(current?.user.emailVerified)}
-                      isFollowing={followingSet.has(user.id)}
-                      isSelf={current?.user.id === user.id}
-                      className="w-full sm:w-auto"
-                    />
+                    <Button asChild variant="secondary" className="w-full sm:w-auto"><Link href={`/profile/${user.username}`}>Профиль</Link></Button>
+                    <FollowButton targetUserId={user.id} targetUsername={user.username} isAuthenticated={Boolean(current)} isVerified={Boolean(current?.user.emailVerified)} isFollowing={followingSet.has(user.id)} isSelf={current?.user.id === user.id} className="w-full sm:w-auto" />
                   </div>
                 </CardContent>
               </Card>
@@ -246,19 +179,7 @@ export default async function SearchPage({
       {tags.length > 0 ? (
         <section className="space-y-3">
           <h2 className="text-xl font-semibold text-foreground">Теги</h2>
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag) => (
-              <Link
-                key={tag.id}
-                href={`/tag/${tag.slug}`}
-                className="tk-link-card max-w-full px-3 py-2 text-sm text-foreground hover:border-ring"
-              >
-                <span className="block max-w-56 truncate">
-                  #{tag.name} · {tag._count.posts}
-                </span>
-              </Link>
-            ))}
-          </div>
+          <div className="flex flex-wrap gap-2">{tags.map((tag) => <Link key={tag.id} href={`/tag/${tag.slug}`} className="tk-link-card max-w-full px-3 py-2 text-sm text-foreground hover:border-ring"><span className="block max-w-56 truncate">#{tag.name} · {tag._count.posts}</span></Link>)}</div>
         </section>
       ) : null}
     </div>
