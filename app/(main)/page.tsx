@@ -196,11 +196,12 @@ export default async function HomePage() {
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>Пока нет опубликованных постов</CardTitle>
+            <CardTitle>Твоя лента ещё не настроена</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm leading-6 text-muted-foreground">
-              Когда авторы начнут публиковать материалы, они появятся здесь в порядке свежести.
+              Читай посты, открывай интересные темы, ставь реакции и подписывайся на авторов — после
+              этого рекомендации появятся здесь.
             </p>
           </CardContent>
         </Card>
