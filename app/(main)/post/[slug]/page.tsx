@@ -35,6 +35,8 @@ export const dynamic = "force-dynamic";
 
 interface PostPageProps { params: Promise<{ slug: string }>; }
 
+type CurrentSessionUser = NonNullable<Awaited<ReturnType<typeof getCurrentSessionReadOnly>>>["user"];
+
 const getPost = cache(async function getPost(slug: string) {
   const id = getPostIdFromPublicSlug(slug);
   return db.post.findUnique({
@@ -86,7 +88,7 @@ function createReactionSummary(reactions: Array<{ userId: string; type: Reaction
   }, { counts: { LIKE: 0, DISLIKE: 0 }, viewerReaction: null });
 }
 
-function toDiscussionUser(user: NonNullable<Awaited<ReturnType<typeof getCurrentSessionReadOnly>>["user"]>): DiscussionUser {
+function toDiscussionUser(user: CurrentSessionUser): DiscussionUser {
   return { id: user.id, username: user.username, emailVerified: user.emailVerified, avatar: user.avatar, premiumUntil: user.premiumUntil?.toISOString() ?? null, profile: user.profile ? { displayName: user.profile.displayName, avatar: user.profile.avatar, premiumNameEffect: user.profile.premiumNameEffect } : null };
 }
 
