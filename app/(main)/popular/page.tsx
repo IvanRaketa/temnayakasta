@@ -86,7 +86,16 @@ export default async function PopularPage({
       <AdSlot placement={AdPlacement.FEED_INLINE} currentUser={current?.user} />
       {ranked.length > 0 ? (
         <section className="space-y-4">
-          {ranked.map((post) => <div key={post.id} className="space-y-2"><p className="text-xs text-muted-foreground">Score: {post.score}</p><PostCard post={post} /></div>)}
+          {ranked.map((post) => (
+            <article key={post.id} className="space-y-2">
+              <div className="mx-auto flex w-full max-w-[44rem] items-center justify-between px-1">
+                <span className="tk-pill border-primary/35 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
+                  Рейтинг: {post.score}
+                </span>
+              </div>
+              <PostCard post={post} />
+            </article>
+          ))}
         </section>
       ) : (
         <Card><CardContent className="p-5"><p className="text-sm leading-6 text-muted-foreground">Популярных постов пока нет.</p></CardContent></Card>
