@@ -50,7 +50,9 @@ export default async function NewPage({
   const where = {
     status: PostStatus.PUBLISHED,
     publishedAt: since ? { gte: since } : { not: null },
-    ...(params.author ? { author: { username: params.author } } : {}),
+    author: params.author
+      ? { username: params.author, deletedAt: null }
+      : { deletedAt: null },
     ...(params.tag ? { tags: { some: { tag: { slug: params.tag } } } } : {}),
   };
   const posts = await db.post.findMany({
@@ -75,68 +77,22 @@ export default async function NewPage({
       <section className="tk-glass-strong tk-panel rounded-lg p-5">
         <p className="tk-kicker">Fresh stream</p>
         <h1 className="mt-3 text-2xl font-semibold text-foreground">Новое</h1>
-        <form
-          action="/new"
-          className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_160px_auto_auto]"
-        >
-          <label className="space-y-1 text-sm">
-            <span className="text-muted-foreground">Тег</span>
-            <input
-              name="tag"
-              defaultValue={params.tag ?? ""}
-              className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring"
-              placeholder="poisk"
-            />
-          </label>
-          <label className="space-y-1 text-sm">
-            <span className="text-muted-foreground">Автор</span>
-            <input
-              name="author"
-              defaultValue={params.author ?? ""}
-              className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring"
-              placeholder="username"
-            />
-          </label>
-          <label className="space-y-1 text-sm">
-            <span className="text-muted-foreground">Дата</span>
-            <select
-              name="date"
-              defaultValue={params.date ?? ""}
-              className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring"
-            >
-              {dateOptions.map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <Button type="submit" className="self-end">
-            Применить
-          </Button>
-          <Button asChild variant="secondary" className="self-end">
-            <Link href="/new">Сбросить</Link>
-          </Button>
+        <form action="/new" className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_160px_auto_auto]">
+          <label className="space-y-1 text-sm"><span className="text-muted-foreground">Тег</span><input name="tag" defaultValue={params.tag ?? ""} className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring" placeholder="poisk" /></label>
+          <label className="space-y-1 text-sm"><span className="text-muted-foreground">Автор</span><input name="author" defaultValue={params.author ?? ""} className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring" placeholder="username" /></label>
+          <label className="space-y-1 text-sm"><span className="text-muted-foreground">Дата</span><select name="date" defaultValue={params.date ?? ""} className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring">{dateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+          <Button type="submit" className="self-end">Применить</Button>
+          <Button asChild variant="secondary" className="self-end"><Link href="/new">Сбросить</Link></Button>
         </form>
       </section>
       <AdSlot placement={AdPlacement.FEED_INLINE} currentUser={current?.user} />
       {visiblePosts.length > 0 ? (
         <section className="space-y-4">
-          {visiblePosts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-          {hasMore ? (
-            <Button asChild variant="secondary" className="w-full">
-              <Link href={`/new?${nextParams.toString()}`}>Показать ещё</Link>
-            </Button>
-          ) : null}
+          {visiblePosts.map((post) => <PostCard key={post.id} post={post} />)}
+          {hasMore ? <Button asChild variant="secondary" className="w-full"><Link href={`/new?${nextParams.toString()}`}>Показать ещё</Link></Button> : null}
         </section>
       ) : (
-        <Card>
-          <CardContent className="p-5">
-            <p className="text-sm leading-6 text-muted-foreground">По этим фильтрам постов нет.</p>
-          </CardContent>
-        </Card>
+        <Card><CardContent className="p-5"><p className="text-sm leading-6 text-muted-foreground">По этим фильтрам постов нет.</p></CardContent></Card>
       )}
     </div>
   );
