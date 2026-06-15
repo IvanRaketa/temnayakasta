@@ -25,6 +25,7 @@ async function getFollowingPosts(userId: string) {
       status: PostStatus.PUBLISHED,
       publishedAt: { not: null },
       author: {
+        deletedAt: null,
         followers: {
           some: {
             followerId: userId,
