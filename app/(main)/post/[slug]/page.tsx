@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
-import { CalendarDays, Eye, FilePenLine, Home, Trash2 } from "lucide-react";
+import { CalendarDays, Eye, FilePenLine, Home, MoreHorizontal, Trash2 } from "lucide-react";
 
 import { deletePostAction } from "@/app/(main)/post/[slug]/actions";
 import { AdSlot } from "@/components/ads/ad-slot";
@@ -143,8 +143,43 @@ export default async function PostPage({ params }: PostPageProps) {
       <article className="space-y-5">
         <PostInterestTracker postId={post.id} enabled={Boolean(current) && !isAuthor} />
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-          <div className="flex flex-wrap gap-2"><BackButton /><Button asChild variant="secondary"><Link href="/"><Home className="size-4" />На главную</Link></Button><SharePostButton title={post.title} url={postPath} /></div>
-          {isAuthor ? <div className="flex flex-col gap-2 sm:flex-row"><Button asChild variant="secondary"><Link href={getPostEditPath(post)}><FilePenLine className="size-4" />Редактировать</Link></Button><form action={deletePostAction}><input type="hidden" name="slug" value={post.slug} /><Button type="submit" variant="secondary" className="w-full"><Trash2 className="size-4" />Удалить</Button></form>{authorPremiumActive && post.status === PostStatus.PUBLISHED ? <PinPostButton postId={post.id} isPinned={post.author.profile?.pinnedPostId === post.id} className="w-full sm:w-auto" /> : null}</div> : null}
+          <div className="flex flex-wrap gap-2">
+            <BackButton />
+            <Button asChild variant="secondary">
+              <Link href="/">
+                <Home className="size-4" />
+                На главную
+              </Link>
+            </Button>
+          </div>
+          {isAuthor ? (
+            <details className="group relative self-start sm:self-auto">
+              <summary className="inline-flex h-10 cursor-pointer list-none items-center justify-center gap-2 rounded-xl border border-border bg-secondary px-3 text-sm font-medium text-secondary-foreground transition hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+                <MoreHorizontal className="size-4" />
+                <span className="sr-only">Действия с постом</span>
+              </summary>
+              <div className="absolute right-0 z-30 mt-2 w-56 overflow-hidden rounded-2xl border border-border bg-popover p-1.5 shadow-2xl shadow-black/30">
+                <Button asChild variant="ghost" className="h-9 w-full justify-start rounded-xl px-3">
+                  <Link href={getPostEditPath(post)}>
+                    <FilePenLine className="size-4" />
+                    Редактировать
+                  </Link>
+                </Button>
+                {authorPremiumActive && post.status === PostStatus.PUBLISHED ? (
+                  <div className="px-0 py-1">
+                    <PinPostButton postId={post.id} isPinned={post.author.profile?.pinnedPostId === post.id} className="h-9 w-full justify-start rounded-xl px-3" />
+                  </div>
+                ) : null}
+                <form action={deletePostAction}>
+                  <input type="hidden" name="slug" value={post.slug} />
+                  <Button type="submit" variant="ghost" className="h-9 w-full justify-start rounded-xl px-3 text-destructive hover:text-destructive">
+                    <Trash2 className="size-4" />
+                    Удалить
+                  </Button>
+                </form>
+              </div>
+            </details>
+          ) : null}
         </div>
         <Card className="overflow-hidden p-5 md:p-7">
           <div className="space-y-5">
