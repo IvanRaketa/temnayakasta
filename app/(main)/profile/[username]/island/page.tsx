@@ -171,8 +171,8 @@ export default async function IslandPage({ params }: IslandPageProps) {
             premiumActive && "tk-island-accent",
           )}
         >
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(34rem,1.05fr)]">
-            <div className="flex max-w-3xl flex-col justify-center">
+          <div className="grid gap-6 xl:grid-cols-[minmax(20rem,0.92fr)_minmax(32rem,1.08fr)]">
+            <div className="flex min-w-0 max-w-3xl flex-col justify-center">
               <div className="tk-kicker">
                 <Sparkles className="size-3.5" />
                 Личный остров
@@ -186,9 +186,9 @@ export default async function IslandPage({ params }: IslandPageProps) {
                     displayName.slice(0, 2).toUpperCase()
                   )}
                 </div>
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="break-words text-4xl font-semibold leading-tight text-foreground md:text-5xl">
+                <div className="min-w-0 flex-1">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
+                    <h1 className="max-w-[14ch] break-words text-3xl font-semibold leading-tight text-foreground sm:text-4xl xl:text-[2.7rem]">
                       <PremiumName user={user}>{displayName}</PremiumName>
                     </h1>
                   </div>
@@ -204,8 +204,7 @@ export default async function IslandPage({ params }: IslandPageProps) {
                 <ProfilePresenceCounter />
                 <span className="tk-pill">
                   <Shield className="size-3.5 text-primary" />
-                  Роль:{" "}
-                  <span className="font-semibold text-foreground">{roleLabel(user.role)}</span>
+                  Роль: <span className="font-semibold text-foreground">{roleLabel(user.role)}</span>
                 </span>
               </div>
             </div>
@@ -231,7 +230,7 @@ export default async function IslandPage({ params }: IslandPageProps) {
                     {formatNumber(stats.xp)} XP
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    До уровня {stats.level + 1}:{" "}
+                    До уровня {stats.level + 1}: {" "}
                     {formatNumber(Math.max(0, stats.nextLevelXp - stats.xp))} XP
                   </p>
                 </div>
