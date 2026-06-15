@@ -97,11 +97,11 @@ export default async function FollowingFeedPage() {
   const posts = await getFollowingPosts(current.user.id);
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-4">
-      <section className="tk-glass-strong tk-panel rounded-2xl p-4">
+    <div className="space-y-5">
+      <section className="tk-glass-strong tk-panel rounded-lg p-5">
         <p className="tk-kicker">Inner circle</p>
-        <h1 className="mt-2 text-xl font-semibold text-foreground">Лента подписок</h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+        <h1 className="mt-3 text-2xl font-semibold text-foreground">Лента подписок</h1>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
           Только опубликованные посты авторов, на которых вы подписаны.
         </p>
       </section>
@@ -109,7 +109,7 @@ export default async function FollowingFeedPage() {
       <AdSlot placement={AdPlacement.FEED_INLINE} currentUser={current.user} />
 
       {posts.length > 0 ? (
-        <section className="grid gap-4 xl:grid-cols-2 xl:items-start">
+        <section className="space-y-4">
           {posts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
