@@ -75,20 +75,20 @@ export default async function PopularPage({
     .slice(0, POPULAR_VISIBLE_LIMIT);
 
   return (
-    <div className="space-y-5">
-      <section className="tk-glass-strong tk-panel rounded-lg p-5">
+    <div className="mx-auto w-full max-w-6xl space-y-4">
+      <section className="tk-glass-strong tk-panel rounded-2xl p-4">
         <p className="tk-kicker">Signal rating</p>
-        <h1 className="mt-3 text-2xl font-semibold text-foreground">Популярное</h1>
+        <h1 className="mt-2 text-xl font-semibold text-foreground">Популярное</h1>
         <form
           action="/popular"
-          className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[160px_1fr_1fr_auto_auto]"
+          className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-[140px_1fr_1fr_auto_auto]"
         >
-          <label className="space-y-1 text-sm">
+          <label className="space-y-1 text-xs">
             <span className="text-muted-foreground">Период</span>
             <select
               name="range"
               defaultValue={activeRange}
-              className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring"
+              className="h-9 w-full rounded-xl border border-input bg-background/70 px-3 text-xs outline-none backdrop-blur transition focus:border-ring"
             >
               {rangeOptions.map(([value, label]) => (
                 <option key={value} value={value}>
@@ -97,35 +97,35 @@ export default async function PopularPage({
               ))}
             </select>
           </label>
-          <label className="space-y-1 text-sm">
+          <label className="space-y-1 text-xs">
             <span className="text-muted-foreground">Тег</span>
             <input
               name="tag"
               defaultValue={params.tag ?? ""}
-              className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring"
+              className="h-9 w-full rounded-xl border border-input bg-background/70 px-3 text-xs outline-none backdrop-blur transition focus:border-ring"
               placeholder="poisk"
             />
           </label>
-          <label className="space-y-1 text-sm">
+          <label className="space-y-1 text-xs">
             <span className="text-muted-foreground">Автор</span>
             <input
               name="author"
               defaultValue={params.author ?? ""}
-              className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring"
+              className="h-9 w-full rounded-xl border border-input bg-background/70 px-3 text-xs outline-none backdrop-blur transition focus:border-ring"
               placeholder="username"
             />
           </label>
-          <Button type="submit" className="self-end">
+          <Button type="submit" size="sm" className="self-end">
             Применить
           </Button>
-          <Button asChild variant="secondary" className="self-end">
+          <Button asChild variant="secondary" size="sm" className="self-end">
             <Link href="/popular">Сбросить</Link>
           </Button>
         </form>
       </section>
       <AdSlot placement={AdPlacement.FEED_INLINE} currentUser={current?.user} />
       {ranked.length > 0 ? (
-        <section className="space-y-4">
+        <section className="grid gap-4 xl:grid-cols-2 xl:items-start">
           {ranked.map((post) => (
             <div key={post.id} className="space-y-2">
               <p className="text-xs text-muted-foreground">Score: {post.score}</p>
