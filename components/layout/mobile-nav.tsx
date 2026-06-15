@@ -55,13 +55,13 @@ export function MobileNav({ showAdmin = false, showModeration = false }: { showA
   return (
     <>
       {isOpen ? (
-        <div className="tk-glass-strong fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-50 rounded-lg p-3 shadow-2xl md:hidden">
+        <div className="tk-glass-strong fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-50 rounded-2xl p-3 shadow-2xl md:hidden">
           <div className="mb-2 flex items-center justify-between gap-3 px-1">
             <p className="text-sm font-semibold text-foreground">Разделы</p>
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="grid size-8 place-items-center rounded-md text-muted-foreground transition hover:bg-secondary/80 hover:text-foreground"
+              className="grid size-8 place-items-center rounded-xl text-muted-foreground transition hover:bg-secondary/80 hover:text-foreground"
               aria-label="Закрыть меню"
             >
               <X className="size-4" />
@@ -82,7 +82,7 @@ export function MobileNav({ showAdmin = false, showModeration = false }: { showA
         </div>
       ) : null}
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border/75 bg-background/82 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-18px_42px_rgba(0,0,0,0.28)] backdrop-blur-xl md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 rounded-t-2xl border-t border-border/75 bg-background/82 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-18px_42px_rgba(0,0,0,0.28)] backdrop-blur-xl md:hidden">
         {mainItems.map((item) => (
           <NavLink
             key={item.href}
@@ -97,7 +97,7 @@ export function MobileNav({ showAdmin = false, showModeration = false }: { showA
           type="button"
           onClick={() => setIsOpen((value) => !value)}
           className={cn(
-            "flex min-h-12 flex-col items-center justify-center gap-1 rounded-md text-xs text-muted-foreground transition-[background-color,color,box-shadow,transform] hover:bg-secondary/80 hover:text-foreground active:scale-[0.98]",
+            "flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl text-xs text-muted-foreground transition-[background-color,color,box-shadow,transform] hover:bg-secondary/80 hover:text-foreground active:scale-[0.98]",
             (isOpen || moreActive) &&
               "bg-primary/10 text-foreground shadow-[inset_0_0_0_1px_rgba(246,205,96,0.18),0_0_18px_rgba(246,205,96,0.1)]",
           )}
