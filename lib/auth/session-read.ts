@@ -12,20 +12,25 @@ export const getCurrentSessionReadOnly = cache(async function getCurrentSessionR
 
   if (!token) return null;
 
-  const session = await db.userSession.findUnique({
-    where: { tokenHash: hashSessionToken(token) },
-    include: { user: { include: { profile: true } } },
-  });
+  try {
+    const session = await db.userSession.findUnique({
+      where: { tokenHash: hashSessionToken(token) },
+      include: { user: { include: { profile: true } } },
+    });
 
-  if (
-    !session ||
-    session.isRevoked ||
-    session.expiresAt <= new Date() ||
-    session.user.deletedAt ||
-    session.user.status === UserStatus.BANNED
-  ) {
+    if (
+      !session ||
+      session.isRevoked ||
+      session.expiresAt <= new Date() ||
+      session.user.deletedAt ||
+      session.user.status === UserStatus.BANNED
+    ) {
+      return null;
+    }
+
+    return { session, user: session.user };
+  } catch (error) {
+    console.error("Failed to read current session.", error);
     return null;
   }
-
-  return { session, user: session.user };
 });
