@@ -47,7 +47,9 @@ export default async function PopularPage({
     where: {
       status: PostStatus.PUBLISHED,
       publishedAt: since ? { gte: since } : { not: null },
-      ...(params.author ? { author: { username: params.author } } : {}),
+      author: params.author
+        ? { username: params.author, deletedAt: null }
+        : { deletedAt: null },
       ...(params.tag ? { tags: { some: { tag: { slug: params.tag } } } } : {}),
     },
     take: POPULAR_POST_LIMIT,
@@ -61,17 +63,11 @@ export default async function PopularPage({
 
   const ranked = posts
     .map((post) => {
-      const likes = post.reactions.reduce(
-        (count, reaction) => count + (reaction.type === ReactionType.LIKE ? 1 : 0),
-        0,
-      );
+      const likes = post.reactions.reduce((count, reaction) => count + (reaction.type === ReactionType.LIKE ? 1 : 0), 0);
       const score = likes * 3 + post._count.comments * 2 + post._count.views;
       return { ...post, score };
     })
-    .sort(
-      (a, b) =>
-        b.score - a.score || (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0),
-    )
+    .sort((a, b) => b.score - a.score || (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0))
     .slice(0, POPULAR_VISIBLE_LIMIT);
 
   return (
@@ -79,66 +75,21 @@ export default async function PopularPage({
       <section className="tk-glass-strong tk-panel rounded-lg p-5">
         <p className="tk-kicker">Signal rating</p>
         <h1 className="mt-3 text-2xl font-semibold text-foreground">Популярное</h1>
-        <form
-          action="/popular"
-          className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[160px_1fr_1fr_auto_auto]"
-        >
-          <label className="space-y-1 text-sm">
-            <span className="text-muted-foreground">Период</span>
-            <select
-              name="range"
-              defaultValue={activeRange}
-              className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring"
-            >
-              {rangeOptions.map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="space-y-1 text-sm">
-            <span className="text-muted-foreground">Тег</span>
-            <input
-              name="tag"
-              defaultValue={params.tag ?? ""}
-              className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring"
-              placeholder="poisk"
-            />
-          </label>
-          <label className="space-y-1 text-sm">
-            <span className="text-muted-foreground">Автор</span>
-            <input
-              name="author"
-              defaultValue={params.author ?? ""}
-              className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring"
-              placeholder="username"
-            />
-          </label>
-          <Button type="submit" className="self-end">
-            Применить
-          </Button>
-          <Button asChild variant="secondary" className="self-end">
-            <Link href="/popular">Сбросить</Link>
-          </Button>
+        <form action="/popular" className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[160px_1fr_1fr_auto_auto]">
+          <label className="space-y-1 text-sm"><span className="text-muted-foreground">Период</span><select name="range" defaultValue={activeRange} className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring">{rangeOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+          <label className="space-y-1 text-sm"><span className="text-muted-foreground">Тег</span><input name="tag" defaultValue={params.tag ?? ""} className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring" placeholder="poisk" /></label>
+          <label className="space-y-1 text-sm"><span className="text-muted-foreground">Автор</span><input name="author" defaultValue={params.author ?? ""} className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring" placeholder="username" /></label>
+          <Button type="submit" className="self-end">Применить</Button>
+          <Button asChild variant="secondary" className="self-end"><Link href="/popular">Сбросить</Link></Button>
         </form>
       </section>
       <AdSlot placement={AdPlacement.FEED_INLINE} currentUser={current?.user} />
       {ranked.length > 0 ? (
         <section className="space-y-4">
-          {ranked.map((post) => (
-            <div key={post.id} className="space-y-2">
-              <p className="text-xs text-muted-foreground">Score: {post.score}</p>
-              <PostCard post={post} />
-            </div>
-          ))}
+          {ranked.map((post) => <div key={post.id} className="space-y-2"><p className="text-xs text-muted-foreground">Score: {post.score}</p><PostCard post={post} /></div>)}
         </section>
       ) : (
-        <Card>
-          <CardContent className="p-5">
-            <p className="text-sm leading-6 text-muted-foreground">Популярных постов пока нет.</p>
-          </CardContent>
-        </Card>
+        <Card><CardContent className="p-5"><p className="text-sm leading-6 text-muted-foreground">Популярных постов пока нет.</p></CardContent></Card>
       )}
     </div>
   );
