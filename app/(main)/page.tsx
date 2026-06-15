@@ -28,7 +28,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Главная лента",
   description:
-    "Главная лента Тёмной Касты: опубликованные авторские материалы, обсуждения и свежие публикации сообщества.",
+    "Главная лента Тёмной Касты: публикуйте посты, обсуждайте темы, подписывайтесь на авторов и собирайте свою ленту рекомендаций.",
 };
 
 const HOME_POST_LIMIT = 10;
@@ -181,8 +181,12 @@ export default async function HomePage() {
               Тёмная Каста
             </h1>
             <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
-              Социальная сеть для авторов, обсуждений, личных островов и живого присутствия внутри
-              сообщества.
+              Публикуй посты, обсуждай темы, подписывайся на авторов и собирай свою ленту
+              рекомендаций.
+            </p>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
+              Здесь можно читать свежие публикации, находить своих авторов, развивать личный остров
+              и оставаться внутри живого сообщества без лишнего шума.
             </p>
             <div className="mt-7 flex flex-col gap-3 xl:flex-row xl:flex-wrap">
               <Button asChild size="default" className="h-11 justify-center px-5">
