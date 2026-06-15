@@ -69,21 +69,21 @@ export default async function TagPage({ params }: TagPageProps) {
   const posts = tag.posts.map((item) => item.post);
 
   return (
-    <div className="space-y-5">
+    <div className="mx-auto w-full max-w-6xl space-y-4">
       <Card>
-        <CardHeader>
-          <CardTitle className="flex min-w-0 items-center gap-2">
+        <CardHeader className="p-4 pb-2">
+          <CardTitle className="flex min-w-0 items-center gap-2 text-xl">
             <Hash className="size-5" />
             <span className="break-words">{tag.name}</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 pb-4 pt-0">
           <p className="text-sm text-muted-foreground">{posts.length} опубликованных постов</p>
         </CardContent>
       </Card>
 
       {posts.length > 0 ? (
-        <section className="space-y-4">
+        <section className="grid gap-4 xl:grid-cols-2 xl:items-start">
           {posts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
