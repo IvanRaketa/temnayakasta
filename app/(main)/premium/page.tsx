@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BadgeCheck, Crown, Palette, Sparkles, ToggleLeft } from "lucide-react";
+import { Crown, Pin, Sparkles, ToggleLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,13 +15,8 @@ export const metadata: Metadata = {
 const features = [
   {
     title: "Отключение рекламы",
-    description: "Рекламные блоки скрываются для активного Premium.",
+    description: "Рекламные блоки скрываются для активного Premium-аккаунта.",
     icon: ToggleLeft,
-  },
-  {
-    title: "Premium-значок",
-    description: "Значок появляется рядом с именем в профиле, постах и комментариях.",
-    icon: BadgeCheck,
   },
   {
     title: "Переливающееся имя",
@@ -33,9 +28,9 @@ const features = [
     icon: Sparkles,
   },
   {
-    title: "Настройка профиля",
-    description: "Выбор эффекта находится в настройках профиля.",
-    icon: Palette,
+    title: "Закрепление постов",
+    description: "Premium позволяет закрепить важную публикацию наверху профиля.",
+    icon: Pin,
   },
 ];
 
@@ -93,17 +88,19 @@ export default async function PremiumPage() {
         </CardContent>
       </Card>
 
-      <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-3 md:grid-cols-3">
         {features.map((feature) => (
-          <Card key={feature.title} className="tk-hover-lift">
-            <CardContent className="space-y-3 p-4">
+          <Card key={feature.title} className="h-full tk-hover-lift">
+            <CardContent className="flex h-full flex-col gap-3 p-5">
               <span className="grid size-10 place-items-center rounded-md border border-border bg-primary/10 text-primary">
                 <feature.icon className="size-5" />
               </span>
-              <h2 className="break-words text-sm font-semibold text-foreground">{feature.title}</h2>
-              <p className="break-words text-sm leading-6 text-muted-foreground">
-                {feature.description}
-              </p>
+              <div className="space-y-2">
+                <h2 className="break-words text-sm font-semibold text-foreground">{feature.title}</h2>
+                <p className="break-words text-sm leading-6 text-muted-foreground">
+                  {feature.description}
+                </p>
+              </div>
             </CardContent>
           </Card>
         ))}
