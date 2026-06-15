@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { useFormStatus } from "react-dom";
 
@@ -46,8 +47,16 @@ function PostReactionForm({
   count: number;
   active: boolean;
 }) {
+  const router = useRouter();
+
+  async function action(formData: FormData) {
+    await togglePostReactionAction(formData);
+    router.refresh();
+    window.setTimeout(() => router.refresh(), 350);
+  }
+
   return (
-    <form action={togglePostReactionAction}>
+    <form action={action}>
       <input type="hidden" name="slug" value={slug} />
       <input type="hidden" name="type" value={type} />
       <ReactionSubmitButton type={type} count={count} active={active} />
