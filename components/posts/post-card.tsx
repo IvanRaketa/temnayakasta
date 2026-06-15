@@ -3,10 +3,12 @@ import { CalendarDays, Eye, MessageSquare, Pin, Sparkles, ThumbsUp } from "lucid
 
 import { PremiumName } from "@/components/premium/premium-name";
 import { PinPostButton } from "@/components/posts/pin-post-button";
+import { SharePostButton } from "@/components/posts/share-post-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createPostExcerpt, getFirstPostImageSrc } from "@/lib/posts/html";
 import { getPostPath } from "@/lib/posts/urls";
+import { projectConfig } from "@/lib/project";
 import { getPostStatusLabel } from "@/lib/ui/status-labels";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +31,7 @@ export function PostCard({ post, showStatus = false, recommendationReason, featu
   const thumbnailSrc = getFirstPostImageSrc(post.content);
   const likeCount = getPostLikeCount(post);
   const postPath = getPostPath(post);
+  const shareUrl = `${projectConfig.url}${postPath}`;
   const previewText = excerpt || "Публикация состоит из изображений или короткого форматированного блока.";
   return (
     <Card className={cn("post-card-enter group mx-auto w-full max-w-[44rem] overflow-hidden rounded-2xl tk-hover-lift hover:border-primary/30", featured && "tk-pinned-post")}>
@@ -47,7 +50,7 @@ export function PostCard({ post, showStatus = false, recommendationReason, featu
       <CardContent className="space-y-4 px-4 pb-4 pt-4 sm:px-5 sm:pb-5 sm:pt-5">
         <Link href={postPath} className="block break-words text-sm leading-6 text-muted-foreground transition hover:text-foreground">{previewText}</Link>
         {post.tags && post.tags.length > 0 ? <div className="flex flex-wrap gap-2">{post.tags.map(({ tag }) => <Link key={tag.slug} href={`/tag/${tag.slug}`} className="tk-pill max-w-full transition hover:border-ring hover:text-foreground"><span className="block max-w-40 truncate">#{tag.name}</span></Link>)}</div> : null}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div className="flex flex-wrap gap-2 text-xs text-muted-foreground"><span className="tk-pill"><ThumbsUp className="size-3.5" />{likeCount}</span><span className="tk-pill"><MessageSquare className="size-3.5" />{post._count?.comments ?? 0}</span><span className="tk-pill"><Eye className="size-3.5" />{post._count?.views ?? 0}</span></div>{pin?.canPin && post.id ? <PinPostButton postId={post.id} isPinned={pin.isPinned} className="w-full sm:w-auto" /> : null}</div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div className="flex flex-wrap gap-2 text-xs text-muted-foreground"><span className="tk-pill"><ThumbsUp className="size-3.5" />{likeCount}</span><span className="tk-pill"><MessageSquare className="size-3.5" />{post._count?.comments ?? 0}</span><span className="tk-pill"><Eye className="size-3.5" />{post._count?.views ?? 0}</span><SharePostButton title={post.title} url={shareUrl} /></div>{pin?.canPin && post.id ? <PinPostButton postId={post.id} isPinned={pin.isPinned} className="w-full sm:w-auto" /> : null}</div>
       </CardContent>
     </Card>
   );
