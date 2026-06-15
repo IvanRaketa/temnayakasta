@@ -86,7 +86,7 @@ function createReactionSummary(reactions: Array<{ userId: string; type: Reaction
   }, { counts: { LIKE: 0, DISLIKE: 0 }, viewerReaction: null });
 }
 
-function toDiscussionUser(user: NonNullable<Awaited<ReturnType<typeof getCurrentSessionReadOnly>>>["user"]): DiscussionUser {
+function toDiscussionUser(user: NonNullable<Awaited<ReturnType<typeof getCurrentSessionReadOnly>>["user"]>): DiscussionUser {
   return { id: user.id, username: user.username, emailVerified: user.emailVerified, avatar: user.avatar, premiumUntil: user.premiumUntil?.toISOString() ?? null, profile: user.profile ? { displayName: user.profile.displayName, avatar: user.profile.avatar, premiumNameEffect: user.profile.premiumNameEffect } : null };
 }
 
@@ -153,35 +153,40 @@ export default async function PostPage({ params }: PostPageProps) {
             </Button>
           </div>
           {isAuthor ? (
-            <details className="group relative self-start sm:self-auto">
-              <summary className="inline-flex h-10 cursor-pointer list-none items-center justify-center gap-2 rounded-xl border border-border bg-secondary px-3 text-sm font-medium text-secondary-foreground transition hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
-                <MoreHorizontal className="size-4" />
+            <details className="group relative z-40 self-start sm:self-auto">
+              <summary className="grid size-11 cursor-pointer list-none place-items-center rounded-2xl border border-border/80 bg-card/80 text-muted-foreground shadow-lg shadow-black/20 backdrop-blur transition hover:border-accent/50 hover:bg-secondary/80 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98] [&::-webkit-details-marker]:hidden">
+                <MoreHorizontal className="size-5" />
                 <span className="sr-only">Действия с постом</span>
               </summary>
-              <div className="absolute right-0 z-30 mt-2 w-56 overflow-hidden rounded-2xl border border-border bg-popover p-1.5 shadow-2xl shadow-black/30">
-                <Button asChild variant="ghost" className="h-9 w-full justify-start rounded-xl px-3">
-                  <Link href={getPostEditPath(post)}>
-                    <FilePenLine className="size-4" />
-                    Редактировать
-                  </Link>
-                </Button>
-                {authorPremiumActive && post.status === PostStatus.PUBLISHED ? (
-                  <div className="px-0 py-1">
+              <div className="tk-glass-strong absolute left-0 z-50 mt-2 w-[min(17rem,calc(100vw-2rem))] overflow-hidden rounded-2xl p-2 shadow-2xl shadow-black/40 sm:left-auto sm:right-0">
+                <div className="px-3 pb-2 pt-1">
+                  <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Пост</p>
+                  <p className="mt-0.5 truncate text-xs text-foreground/80">Действия автора</p>
+                </div>
+                <div className="space-y-1">
+                  <Button asChild variant="ghost" className="h-10 w-full justify-start rounded-xl px-3 text-foreground hover:border-accent/35 hover:bg-secondary/80">
+                    <Link href={getPostEditPath(post)}>
+                      <FilePenLine className="size-4 text-primary" />
+                      Редактировать
+                    </Link>
+                  </Button>
+                  {authorPremiumActive && post.status === PostStatus.PUBLISHED ? (
                     <PinPostButton
                       postId={post.id}
                       isPinned={post.author.profile?.pinnedPostId === post.id}
                       className="w-full"
-                      buttonClassName="h-9 w-full justify-start rounded-xl border-transparent bg-transparent px-3 text-muted-foreground shadow-none hover:border-border hover:bg-secondary/70 hover:text-foreground"
+                      buttonClassName="h-10 w-full justify-start rounded-xl border-transparent bg-transparent px-3 text-foreground shadow-none hover:border-accent/35 hover:bg-secondary/80 hover:text-foreground"
                     />
-                  </div>
-                ) : null}
-                <form action={deletePostAction}>
-                  <input type="hidden" name="slug" value={post.slug} />
-                  <Button type="submit" variant="ghost" className="h-9 w-full justify-start rounded-xl px-3 text-destructive hover:text-destructive">
-                    <Trash2 className="size-4" />
-                    Удалить
-                  </Button>
-                </form>
+                  ) : null}
+                  <div className="my-1 h-px bg-border/70" />
+                  <form action={deletePostAction}>
+                    <input type="hidden" name="slug" value={post.slug} />
+                    <Button type="submit" variant="ghost" className="h-10 w-full justify-start rounded-xl px-3 text-destructive hover:border-destructive/35 hover:bg-destructive/10 hover:text-destructive">
+                      <Trash2 className="size-4" />
+                      Удалить
+                    </Button>
+                  </form>
+                </div>
               </div>
             </details>
           ) : null}
