@@ -4,7 +4,6 @@ import { CalendarDays, Eye, MessageSquare, Pin, Sparkles, ThumbsUp } from "lucid
 import { PremiumName } from "@/components/premium/premium-name";
 import { PinPostButton } from "@/components/posts/pin-post-button";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createPostExcerpt, getFirstPostImageSrc } from "@/lib/posts/html";
 import { getPostPath } from "@/lib/posts/urls";
@@ -86,16 +85,17 @@ export function PostCard({
   const thumbnailSrc = getFirstPostImageSrc(post.content);
   const likeCount = getPostLikeCount(post);
   const postPath = getPostPath(post);
+  const previewText = excerpt || "Публикация состоит из изображений или короткого форматированного блока.";
 
   return (
     <Card
       className={cn(
-        "post-card-enter group overflow-hidden tk-hover-lift hover:border-primary/35",
+        "post-card-enter group mx-auto w-full max-w-4xl overflow-hidden rounded-2xl tk-hover-lift hover:border-primary/30",
         featured && "tk-pinned-post",
       )}
     >
       {featured ? (
-        <div className="flex items-center justify-between gap-3 border-b border-primary/30 bg-primary/10 px-5 py-3 text-xs font-semibold uppercase text-primary">
+        <div className="flex items-center justify-between gap-3 border-b border-primary/30 bg-primary/10 px-4 py-3 text-xs font-semibold uppercase text-primary sm:px-5">
           <span className="inline-flex items-center gap-2">
             <Pin className="size-3.5" />
             Закреплено на вершине профиля
@@ -107,24 +107,24 @@ export function PostCard({
         <Link
           href={postPath}
           aria-label={`Открыть: ${post.title}`}
-          className="relative block aspect-video overflow-hidden border-b border-border bg-secondary"
+          className="relative block h-44 overflow-hidden border-b border-border bg-secondary sm:h-56 lg:h-64 xl:h-72"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={thumbnailSrc}
             alt=""
-            className="size-full object-cover transition duration-500 group-hover:scale-[1.03]"
+            className="size-full object-cover transition duration-500 group-hover:scale-[1.025]"
             loading="lazy"
             decoding="async"
           />
-          <span className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
+          <span className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
         </Link>
       ) : null}
-      <CardHeader className="space-y-4">
+      <CardHeader className="space-y-3 px-4 py-4 sm:px-5 sm:py-5">
         <div className="flex min-w-0 gap-3">
           <Link
             href={`/profile/${post.author.username}`}
-            className="tk-avatar-ring grid size-11 shrink-0 place-items-center overflow-hidden rounded-full bg-secondary text-sm font-semibold text-secondary-foreground"
+            className="tk-avatar-ring grid size-10 shrink-0 place-items-center overflow-hidden rounded-full bg-secondary text-sm font-semibold text-secondary-foreground sm:size-11"
           >
             {authorAvatar ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -163,16 +163,19 @@ export function PostCard({
             </div>
           </div>
         </div>
-        <CardTitle className="break-words text-2xl leading-tight">
+        <CardTitle className="break-words text-xl leading-tight sm:text-2xl">
           <Link href={postPath} className="transition hover:text-primary">
             {post.title}
           </Link>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="break-words text-sm leading-6 text-muted-foreground">
-          {excerpt || "Публикация состоит из изображений или короткого форматированного блока."}
-        </p>
+      <CardContent className="space-y-4 px-4 pb-4 pt-0 sm:px-5 sm:pb-5">
+        <Link
+          href={postPath}
+          className="block break-words text-sm leading-6 text-muted-foreground transition hover:text-foreground"
+        >
+          {previewText}
+        </Link>
         {post.tags && post.tags.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {post.tags.map(({ tag }) => (
@@ -201,18 +204,9 @@ export function PostCard({
               {post._count?.views ?? 0}
             </span>
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            {pin?.canPin && post.id ? (
-              <PinPostButton
-                postId={post.id}
-                isPinned={pin.isPinned}
-                className="w-full sm:w-auto"
-              />
-            ) : null}
-            <Button asChild variant="secondary" className="w-full sm:w-auto">
-              <Link href={postPath}>Открыть</Link>
-            </Button>
-          </div>
+          {pin?.canPin && post.id ? (
+            <PinPostButton postId={post.id} isPinned={pin.isPinned} className="w-full sm:w-auto" />
+          ) : null}
         </div>
       </CardContent>
     </Card>
