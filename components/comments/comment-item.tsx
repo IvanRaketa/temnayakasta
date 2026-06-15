@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { DELETED_COMMENT_TEXT } from "@/lib/comments/content";
 import { cn } from "@/lib/utils";
 
-const MAX_INDENT_LEVEL = 3;
+const MAX_INDENT_LEVEL = 2;
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("ru-RU", {
@@ -118,28 +118,35 @@ interface CommentItemProps {
   postPath: string;
   currentUser?: DiscussionUser | null;
   depth?: number;
+  branchOpen?: boolean;
 }
 
-export function CommentItem({ comment, slug, postPath, currentUser, depth = 0 }: CommentItemProps) {
-  const [repliesOpen, setRepliesOpen] = useState(false);
+export function CommentItem({
+  comment,
+  slug,
+  postPath,
+  currentUser,
+  depth = 0,
+  branchOpen = false,
+}: CommentItemProps) {
+  const [repliesOpen, setRepliesOpen] = useState(depth === 0);
   const isHidden = comment.status === "HIDDEN" || comment.status === "BLOCKED";
   const isPending = comment.status === "PENDING_REVIEW";
   const isAuthor = currentUser?.id === comment.author.id;
   const canInteract = Boolean(currentUser?.emailVerified) && comment.status === "PUBLISHED";
-  const indentLevel = Math.min(depth, MAX_INDENT_LEVEL);
-  const overflowDepth = depth > MAX_INDENT_LEVEL;
+  const isCappedDepth = depth >= MAX_INDENT_LEVEL;
   const avatar = authorAvatar(comment);
   const name = authorName(comment);
   const replyCount = comment.replies.length;
   const hasReplies = replyCount > 0;
   const repliesId = `comment-replies-${comment.id}`;
   const replyCountText = `${replyCount} ${replyWord(replyCount)}`;
+  const canToggleReplies = hasReplies && !branchOpen;
+  const showReplies = hasReplies && (branchOpen || repliesOpen);
+  const nextBranchOpen = branchOpen || repliesOpen;
 
   return (
-    <div
-      className={cn("min-w-0 space-y-3", depth > 0 && "pl-0.5 sm:pl-1", overflowDepth && "pl-0")}
-      style={{ marginLeft: depth === 0 ? 0 : `${indentLevel * 0.1}rem` }}
-    >
+    <div className={cn("min-w-0 space-y-3", depth > 0 && !isCappedDepth && "pl-0.5 sm:pl-1")}>
       <div className="tk-glass rounded-md p-3 transition-colors sm:p-4">
         <div className="flex min-w-0 gap-3">
           <div className="tk-avatar-ring grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">
@@ -244,7 +251,7 @@ export function CommentItem({ comment, slug, postPath, currentUser, depth = 0 }:
         </div>
       </div>
 
-      {hasReplies ? (
+      {canToggleReplies ? (
         <div className="flex items-center">
           <Button
             type="button"
@@ -257,19 +264,19 @@ export function CommentItem({ comment, slug, postPath, currentUser, depth = 0 }:
           >
             {repliesOpen ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
             <span className="truncate">
-              {repliesOpen ? `Скрыть ${replyCountText}` : `Показать ${replyCountText}`}
+              {repliesOpen ? `Скрыть ветку · ${replyCountText}` : `Показать ветку · ${replyCountText}`}
             </span>
           </Button>
         </div>
       ) : null}
 
-      {hasReplies && repliesOpen ? (
+      {showReplies ? (
         <div
           id={repliesId}
           className={cn(
-            "relative space-y-3 border-l border-border pl-3 sm:pl-4",
-            depth < MAX_INDENT_LEVEL && "ml-2 sm:ml-5",
-            depth >= MAX_INDENT_LEVEL && "ml-0",
+            "relative space-y-3",
+            depth < MAX_INDENT_LEVEL && "border-l border-border pl-3 sm:ml-5 sm:pl-4",
+            depth >= MAX_INDENT_LEVEL && "pl-0",
           )}
         >
           {comment.replies.map((reply) => (
@@ -280,6 +287,7 @@ export function CommentItem({ comment, slug, postPath, currentUser, depth = 0 }:
               postPath={postPath}
               currentUser={currentUser}
               depth={depth + 1}
+              branchOpen={nextBranchOpen}
             />
           ))}
         </div>
