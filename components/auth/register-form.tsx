@@ -2,57 +2,93 @@
 
 import Link from "next/link";
 import type React from "react";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { registerAction } from "@/app/(auth)/actions";
 import { initialState, type FormState } from "@/app/(auth)/form-state";
 import { FormMessage } from "@/components/auth/form-message";
 import { SubmitButton } from "@/components/auth/submit-button";
+import { useAuthPageRecovery } from "@/components/auth/use-auth-page-recovery";
 import { Input } from "@/components/ui/input";
 import { LEGAL_DOCUMENTS } from "@/lib/legal/documents";
+
+const initialConsents = {
+  termsAccepted: false,
+  communityRulesAccepted: false,
+  privacyAccepted: false,
+  personalDataPolicyAccepted: false,
+  personalDataConsentAccepted: false,
+  personalDataDistributionConsentAccepted: false,
+  emailNotificationsAccepted: false,
+};
+
+type ConsentField = keyof typeof initialConsents;
 
 function ConsentCheckbox({
   name,
   children,
-  errorField,
   state,
+  checked,
+  onCheckedChange,
 }: {
-  name: string;
+  name: ConsentField;
   children: React.ReactNode;
-  errorField: string;
   state: FormState;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
 }) {
   return (
     <div className="space-y-1">
       <label className="tk-link-card flex items-start gap-3 p-3 text-sm leading-5 text-muted-foreground">
         <input
           name={name}
+          value="on"
           type="checkbox"
           className="mt-1 size-4 shrink-0 accent-primary"
+          checked={checked}
+          onChange={(event) => onCheckedChange(event.currentTarget.checked)}
           required
         />
         <span>{children}</span>
       </label>
-      <FormMessage state={state} field={errorField} />
+      <FormMessage state={state} field={name} />
     </div>
   );
 }
 
 export function RegisterForm() {
+  const formVersion = useAuthPageRecovery();
+
+  return <RegisterFormFields key={formVersion} />;
+}
+
+function RegisterFormFields() {
   const [state, action] = useActionState(registerAction, initialState);
+  const [consents, setConsents] = useState(initialConsents);
+
+  function setConsent(name: ConsentField, checked: boolean) {
+    setConsents((current) => ({ ...current, [name]: checked }));
+  }
 
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} className="space-y-4" noValidate={false}>
       <div className="space-y-2">
-        <Input name="username" placeholder="username" autoComplete="username" />
+        <Input name="username" placeholder="username" autoComplete="username" required />
         <FormMessage state={state} field="username" />
       </div>
       <div className="space-y-2">
-        <Input name="email" type="email" placeholder="email@example.com" autoComplete="email" />
+        <Input name="email" type="email" placeholder="email@example.com" autoComplete="email" required />
         <FormMessage state={state} field="email" />
       </div>
       <div className="space-y-2">
-        <Input name="password" type="password" placeholder="Пароль" autoComplete="new-password" />
+        <Input
+          name="password"
+          type="password"
+          placeholder="Пароль"
+          autoComplete="new-password"
+          minLength={8}
+          required
+        />
         <FormMessage state={state} field="password" />
       </div>
       <div className="space-y-2">
@@ -61,11 +97,18 @@ export function RegisterForm() {
           type="password"
           placeholder="Повторите пароль"
           autoComplete="new-password"
+          minLength={8}
+          required
         />
         <FormMessage state={state} field="passwordConfirmation" />
       </div>
       <div className="space-y-2">
-        <ConsentCheckbox name="termsAccepted" errorField="termsAccepted" state={state}>
+        <ConsentCheckbox
+          name="termsAccepted"
+          state={state}
+          checked={consents.termsAccepted}
+          onCheckedChange={(checked) => setConsent("termsAccepted", checked)}
+        >
           Регистрируясь, я принимаю{" "}
           <Link href={LEGAL_DOCUMENTS.terms.href} className="text-primary hover:underline">
             пользовательское соглашение
@@ -74,8 +117,9 @@ export function RegisterForm() {
         </ConsentCheckbox>
         <ConsentCheckbox
           name="communityRulesAccepted"
-          errorField="communityRulesAccepted"
           state={state}
+          checked={consents.communityRulesAccepted}
+          onCheckedChange={(checked) => setConsent("communityRulesAccepted", checked)}
         >
           Обязуюсь соблюдать{" "}
           <Link href={LEGAL_DOCUMENTS.communityRules.href} className="text-primary hover:underline">
@@ -83,7 +127,12 @@ export function RegisterForm() {
           </Link>
           .
         </ConsentCheckbox>
-        <ConsentCheckbox name="privacyAccepted" errorField="privacyAccepted" state={state}>
+        <ConsentCheckbox
+          name="privacyAccepted"
+          state={state}
+          checked={consents.privacyAccepted}
+          onCheckedChange={(checked) => setConsent("privacyAccepted", checked)}
+        >
           Ознакомлен с тем, какие данные собираются и как используются, и принимаю{" "}
           <Link href={LEGAL_DOCUMENTS.privacy.href} className="text-primary hover:underline">
             политику конфиденциальности
@@ -92,8 +141,9 @@ export function RegisterForm() {
         </ConsentCheckbox>
         <ConsentCheckbox
           name="personalDataPolicyAccepted"
-          errorField="personalDataPolicyAccepted"
           state={state}
+          checked={consents.personalDataPolicyAccepted}
+          onCheckedChange={(checked) => setConsent("personalDataPolicyAccepted", checked)}
         >
           Принимаю{" "}
           <Link href={LEGAL_DOCUMENTS.personalData.href} className="text-primary hover:underline">
@@ -103,8 +153,9 @@ export function RegisterForm() {
         </ConsentCheckbox>
         <ConsentCheckbox
           name="personalDataConsentAccepted"
-          errorField="personalDataConsentAccepted"
           state={state}
+          checked={consents.personalDataConsentAccepted}
+          onCheckedChange={(checked) => setConsent("personalDataConsentAccepted", checked)}
         >
           Даю отдельное{" "}
           <Link
@@ -117,8 +168,11 @@ export function RegisterForm() {
         </ConsentCheckbox>
         <ConsentCheckbox
           name="personalDataDistributionConsentAccepted"
-          errorField="personalDataDistributionConsentAccepted"
           state={state}
+          checked={consents.personalDataDistributionConsentAccepted}
+          onCheckedChange={(checked) =>
+            setConsent("personalDataDistributionConsentAccepted", checked)
+          }
         >
           Понимаю, что публикуя профиль, посты, комментарии, реакции, аватар и иные публичные
           материалы, я соглашаюсь с тем, что такие данные и материалы могут быть доступны другим
@@ -133,8 +187,9 @@ export function RegisterForm() {
         </ConsentCheckbox>
         <ConsentCheckbox
           name="emailNotificationsAccepted"
-          errorField="emailNotificationsAccepted"
           state={state}
+          checked={consents.emailNotificationsAccepted}
+          onCheckedChange={(checked) => setConsent("emailNotificationsAccepted", checked)}
         >
           Даю{" "}
           <Link
