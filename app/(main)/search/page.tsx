@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { Search } from "lucide-react";
 
 import { createAuditActionContext } from "@/lib/audit/action-context";
+import { PostCard } from "@/components/posts/post-card";
 import { SearchForm } from "@/components/search/search-form";
 import { FollowButton } from "@/components/social/follow-button";
 import { Button } from "@/components/ui/button";
@@ -11,8 +12,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCurrentSessionReadOnly } from "@/lib/auth/session-read";
 import { db } from "@/lib/db";
 import { PostStatus, UserStatus } from "@/lib/generated/prisma/client";
-import { createPostExcerpt } from "@/lib/posts/html";
-import { getPostPath } from "@/lib/posts/urls";
 import { enforceRateLimit, rateLimitRules } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -83,9 +82,10 @@ export default async function SearchPage({
             orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
             take: RESULT_LIMIT,
             include: {
-              author: { select: { username: true, avatar: true, profile: true } },
+              author: { select: { username: true, avatar: true, premiumUntil: true, profile: true } },
               tags: { include: { tag: true } },
               _count: { select: { comments: true, reactions: true, views: true } },
+              reactions: { select: { type: true } },
             },
           }),
           db.user.findMany({
@@ -123,7 +123,12 @@ export default async function SearchPage({
   return (
     <div className="space-y-5">
       <Card className="tk-glass-strong">
-        <CardHeader><CardTitle className="flex items-center gap-2"><Search className="size-5" />Поиск</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Search className="size-5" />
+            Поиск
+          </CardTitle>
+        </CardHeader>
         <CardContent className="space-y-3">
           <SearchForm initialQuery={q} />
           {tooShort ? <p className="text-sm text-destructive">Введите минимум {MIN_QUERY_LENGTH} символа.</p> : null}
@@ -132,24 +137,22 @@ export default async function SearchPage({
         </CardContent>
       </Card>
 
-      {empty ? <Card><CardContent className="p-5"><p className="text-sm leading-6 text-muted-foreground">Ничего не найдено.</p></CardContent></Card> : null}
+      {empty ? (
+        <Card>
+          <CardContent className="p-5">
+            <p className="text-sm leading-6 text-muted-foreground">Ничего не найдено.</p>
+          </CardContent>
+        </Card>
+      ) : null}
 
       {posts.length > 0 ? (
         <section className="space-y-3">
           <h2 className="text-xl font-semibold text-foreground">Посты</h2>
-          {posts.map((post) => (
-            <Card key={post.id}>
-              <CardContent className="space-y-3 p-4">
-                <Link href={getPostPath(post)} className="block break-words text-lg font-semibold text-foreground hover:text-primary">{post.title}</Link>
-                <p className="break-words text-sm leading-6 text-muted-foreground">{createPostExcerpt(post.content, 180)}</p>
-                <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-                  <Link href={`/profile/${post.author.username}`} className="hover:text-primary">@{post.author.username}</Link>
-                  <span>{post._count.views} просмотров</span><span>{post._count.reactions} реакций</span><span>{post._count.comments} комментариев</span>
-                </div>
-                {post.tags.length > 0 ? <div className="flex flex-wrap gap-2">{post.tags.map(({ tag }) => <Link key={tag.slug} href={`/tag/${tag.slug}`} className="tk-pill max-w-full hover:text-foreground"><span className="block max-w-40 truncate">#{tag.name}</span></Link>)}</div> : null}
-              </CardContent>
-            </Card>
-          ))}
+          <div className="space-y-4">
+            {posts.map((post) => (
+              <PostCard key={post.id} post={post} />
+            ))}
+          </div>
         </section>
       ) : null}
 
