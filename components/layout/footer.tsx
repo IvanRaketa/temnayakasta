@@ -6,7 +6,7 @@ import { projectConfig } from "@/lib/project";
 export function Footer() {
   return (
     <footer className="px-4 pb-24 pt-6 md:px-6 md:pb-6">
-      <div className="tk-glass mx-auto flex w-full max-w-7xl flex-col gap-3 rounded-lg p-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <div className="tk-glass mx-auto flex w-full max-w-7xl flex-col gap-3 rounded-2xl p-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <span className="font-semibold text-foreground">{projectConfig.name}</span>
         <nav className="flex flex-wrap gap-x-4 gap-y-2">
           <Link href="/help" className="hover:text-primary">
