@@ -171,17 +171,19 @@ export default async function HomePage() {
         </Card>
       ) : recommendations.length > 0 ? (
         <section className="space-y-4">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="tk-kicker">Лента</p>
-              <h2 className="mt-3 text-2xl font-semibold text-foreground">
-                Рекомендовано для тебя
-              </h2>
+          <div className="w-full md:mx-auto md:max-w-[44rem]">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="tk-kicker">Лента</p>
+                <h2 className="mt-3 text-2xl font-semibold leading-tight text-foreground md:text-[1.75rem]">
+                  Рекомендовано для тебя
+                </h2>
+              </div>
+              <span className="tk-pill w-fit">
+                <Users className="size-3.5 text-primary" />
+                социальная лента
+              </span>
             </div>
-            <span className="tk-pill">
-              <Users className="size-3.5 text-primary" />
-              социальная лента
-            </span>
           </div>
           {recommendations.map((recommendation) => (
             <PostCard
