@@ -211,8 +211,8 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
                   </span>
                 ) : null}
               </div>
-              <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_220px] md:items-end">
-                <label className="space-y-2 text-sm">
+              <div className="mt-3 grid gap-3 md:grid-cols-[minmax(0,1fr)_220px] md:items-start">
+                <label className="space-y-1.5 text-sm">
                   <span className="font-medium text-foreground">Переливание имени</span>
                   <select
                     name="premiumNameEffect"
