@@ -71,38 +71,42 @@ export default async function NewPage({
   nextParams.set("page", String(page + 1));
 
   return (
-    <div className="space-y-5">
-      <section className="tk-glass-strong tk-panel rounded-lg p-5">
-        <p className="tk-kicker">Fresh stream</p>
-        <h1 className="mt-3 text-2xl font-semibold text-foreground">Новое</h1>
+    <div className="mx-auto w-full max-w-6xl space-y-4">
+      <section className="tk-glass-strong tk-panel rounded-2xl p-4">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="tk-kicker">Fresh stream</p>
+            <h1 className="mt-2 text-xl font-semibold text-foreground">Новое</h1>
+          </div>
+        </div>
         <form
           action="/new"
-          className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_160px_auto_auto]"
+          className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_140px_auto_auto]"
         >
-          <label className="space-y-1 text-sm">
+          <label className="space-y-1 text-xs">
             <span className="text-muted-foreground">Тег</span>
             <input
               name="tag"
               defaultValue={params.tag ?? ""}
-              className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring"
+              className="h-9 w-full rounded-xl border border-input bg-background/70 px-3 text-xs outline-none backdrop-blur transition focus:border-ring"
               placeholder="poisk"
             />
           </label>
-          <label className="space-y-1 text-sm">
+          <label className="space-y-1 text-xs">
             <span className="text-muted-foreground">Автор</span>
             <input
               name="author"
               defaultValue={params.author ?? ""}
-              className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring"
+              className="h-9 w-full rounded-xl border border-input bg-background/70 px-3 text-xs outline-none backdrop-blur transition focus:border-ring"
               placeholder="username"
             />
           </label>
-          <label className="space-y-1 text-sm">
+          <label className="space-y-1 text-xs">
             <span className="text-muted-foreground">Дата</span>
             <select
               name="date"
               defaultValue={params.date ?? ""}
-              className="h-10 w-full rounded-md border border-input bg-background/70 px-3 text-sm outline-none backdrop-blur transition focus:border-ring"
+              className="h-9 w-full rounded-xl border border-input bg-background/70 px-3 text-xs outline-none backdrop-blur transition focus:border-ring"
             >
               {dateOptions.map(([value, label]) => (
                 <option key={value} value={value}>
@@ -111,22 +115,22 @@ export default async function NewPage({
               ))}
             </select>
           </label>
-          <Button type="submit" className="self-end">
+          <Button type="submit" size="sm" className="self-end">
             Применить
           </Button>
-          <Button asChild variant="secondary" className="self-end">
+          <Button asChild variant="secondary" size="sm" className="self-end">
             <Link href="/new">Сбросить</Link>
           </Button>
         </form>
       </section>
       <AdSlot placement={AdPlacement.FEED_INLINE} currentUser={current?.user} />
       {visiblePosts.length > 0 ? (
-        <section className="space-y-4">
+        <section className="grid gap-4 xl:grid-cols-2 xl:items-start">
           {visiblePosts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
           {hasMore ? (
-            <Button asChild variant="secondary" className="w-full">
+            <Button asChild variant="secondary" className="w-full xl:col-span-2">
               <Link href={`/new?${nextParams.toString()}`}>Показать ещё</Link>
             </Button>
           ) : null}
