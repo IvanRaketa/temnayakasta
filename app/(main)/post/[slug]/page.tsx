@@ -13,6 +13,7 @@ import { PostReactions } from "@/components/comments/post-reactions";
 import { BackButton } from "@/components/navigation/back-button";
 import { PostInterestTracker } from "@/components/posts/post-interest-tracker";
 import { PinPostButton } from "@/components/posts/pin-post-button";
+import { SharePostButton } from "@/components/posts/share-post-button";
 import { PostPresenceCounter } from "@/components/presence/page-presence";
 import { PresenceProvider } from "@/components/presence/presence-provider";
 import { PremiumName } from "@/components/premium/premium-name";
@@ -27,6 +28,7 @@ import { AdPlacement, CommentStatus, type ReactionType, PostStatus } from "@/lib
 import { createPostExcerpt, sanitizePostHtml } from "@/lib/posts/html";
 import { getPostEditPath, getPostIdFromPublicSlug, getPostPath, getPostPublicSlug } from "@/lib/posts/urls";
 import { recordPostView } from "@/lib/posts/views";
+import { projectConfig } from "@/lib/project";
 import { decodeRouteParam } from "@/lib/routing/decode-route-param";
 import { getPostStatusLabel } from "@/lib/ui/status-labels";
 
@@ -136,13 +138,14 @@ export default async function PostPage({ params }: PostPageProps) {
   const currentUser = current ? toDiscussionUser(current.user) : null;
   const postReactions = createReactionSummary(post.reactions, current?.user.id);
   const postPath = getPostPath(post);
+  const shareUrl = `${projectConfig.url}${postPath}`;
 
   return (
     <PresenceProvider scope="post" targetId={post.id} initialActivity="reading_post">
       <article className="space-y-5">
         <PostInterestTracker postId={post.id} enabled={Boolean(current) && !isAuthor} />
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-          <div className="flex flex-wrap gap-2"><BackButton /><Button asChild variant="secondary"><Link href="/"><Home className="size-4" />На главную</Link></Button></div>
+          <div className="flex flex-wrap gap-2"><BackButton /><Button asChild variant="secondary"><Link href="/"><Home className="size-4" />На главную</Link></Button><SharePostButton title={post.title} url={shareUrl} /></div>
           {isAuthor ? <div className="flex flex-col gap-2 sm:flex-row"><Button asChild variant="secondary"><Link href={getPostEditPath(post)}><FilePenLine className="size-4" />Редактировать</Link></Button><form action={deletePostAction}><input type="hidden" name="slug" value={post.slug} /><Button type="submit" variant="secondary" className="w-full"><Trash2 className="size-4" />Удалить</Button></form>{authorPremiumActive && post.status === PostStatus.PUBLISHED ? <PinPostButton postId={post.id} isPinned={post.author.profile?.pinnedPostId === post.id} className="w-full sm:w-auto" /> : null}</div> : null}
         </div>
         <Card className="overflow-hidden p-5 md:p-7">
@@ -164,7 +167,7 @@ export default async function PostPage({ params }: PostPageProps) {
             </div>
             <div className="prose-tk max-w-none break-words" dangerouslySetInnerHTML={{ __html: sanitizePostHtml(post.content) }} />
             {post.tags.length > 0 ? <div className="flex flex-wrap gap-2 border-t border-border pt-4">{post.tags.map(({ tag }) => <Link key={tag.slug} href={`/tag/${tag.slug}`} className="max-w-full rounded-md border border-border bg-background px-2 py-1 text-xs text-muted-foreground transition hover:border-ring hover:text-foreground"><span className="block max-w-48 truncate">#{tag.name}</span></Link>)}</div> : null}
-            <div className="border-t border-border pt-4"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><PostReactions slug={post.slug} reactions={postReactions} isAuthenticated={Boolean(current)} isVerified={Boolean(current?.user.emailVerified)} /><ReportForm targetType="POST" targetId={post.id} returnPath={postPath} disabled={!current?.user.emailVerified || isAuthor} className="sm:max-w-sm" /></div></div>
+            <div className="border-t border-border pt-4"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center"><PostReactions slug={post.slug} reactions={postReactions} isAuthenticated={Boolean(current)} isVerified={Boolean(current?.user.emailVerified)} /><SharePostButton title={post.title} url={shareUrl} /></div><ReportForm targetType="POST" targetId={post.id} returnPath={postPath} disabled={!current?.user.emailVerified || isAuthor} className="sm:max-w-sm" /></div></div>
           </div>
         </Card>
         <AdSlot placement={AdPlacement.POST_BOTTOM} currentUser={current?.user} />
