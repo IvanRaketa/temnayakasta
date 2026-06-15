@@ -20,7 +20,7 @@
   --border: oklch(0.47 0.056 245 / 0.48);
   --input: oklch(0.36 0.049 249 / 0.68);
   --ring: oklch(0.78 0.156 78);
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   --glass: color-mix(in oklch, var(--card) 82%, transparent);
   --glass-strong: color-mix(in oklch, var(--card) 94%, black 6%);
   --glass-line: oklch(0.78 0.08 214 / 0.28);
@@ -67,7 +67,7 @@
 }
 
 .compact {
-  --radius: 0.375rem;
+  --radius: 0.5rem;
 }
 
 .compact body {
