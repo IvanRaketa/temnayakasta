@@ -48,7 +48,7 @@ export function CommentForm({ slug, isAuthenticated, isVerified = true }: Commen
 
   if (!isAuthenticated) {
     return (
-      <div className="tk-glass rounded-md p-4 text-sm text-muted-foreground">
+      <div className="tk-glass rounded-xl p-4 text-sm text-muted-foreground">
         Чтобы присоединиться к обсуждению,{" "}
         <Link href="/login" className="font-medium text-primary hover:underline">
           войдите в аккаунт
@@ -60,7 +60,7 @@ export function CommentForm({ slug, isAuthenticated, isVerified = true }: Commen
 
   if (!isVerified) {
     return (
-      <div className="tk-glass rounded-md p-4 text-sm text-muted-foreground">
+      <div className="tk-glass rounded-xl p-4 text-sm text-muted-foreground">
         Подтвердите e-mail для полного доступа.
       </div>
     );
