@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./mobile-ui-fixes.css";
 import "../styles/rounding.css";
 
 import { projectConfig } from "@/lib/project";
