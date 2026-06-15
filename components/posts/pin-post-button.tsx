@@ -7,17 +7,19 @@ export function PinPostButton({
   postId,
   isPinned,
   className,
+  buttonClassName,
 }: {
   postId: string;
   isPinned: boolean;
   className?: string;
+  buttonClassName?: string;
 }) {
   const Icon = isPinned ? PinOff : Pin;
 
   return (
     <form action={togglePinnedPostAction} className={className}>
       <input type="hidden" name="postId" value={postId} />
-      <Button type="submit" variant={isPinned ? "default" : "secondary"} className="w-full">
+      <Button type="submit" variant={isPinned ? "default" : "secondary"} className={buttonClassName ?? "w-full"}>
         <Icon className="size-4" />
         {isPinned ? "Открепить" : "Закрепить"}
       </Button>
