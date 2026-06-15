@@ -83,18 +83,18 @@ export function NavLink({
     <Link
       href={href}
       className={cn(
-        "group relative flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-muted-foreground transition-[background-color,color,box-shadow,transform] hover:bg-secondary/65 hover:text-foreground",
+        "group relative flex h-9 items-center gap-2.5 rounded-xl px-2.5 text-xs font-medium text-muted-foreground transition-[background-color,color,box-shadow,transform] hover:bg-secondary/65 hover:text-foreground",
         active &&
-          "bg-primary/10 text-foreground shadow-[inset_0_0_0_1px_rgba(246,205,96,0.16),0_0_22px_rgba(126,231,255,0.08)]",
+          "bg-primary/10 text-foreground shadow-[inset_0_0_0_1px_rgba(246,205,96,0.16),0_0_18px_rgba(126,231,255,0.07)]",
       )}
     >
       <span
         className={cn(
-          "grid size-7 shrink-0 place-items-center rounded-lg border border-transparent transition",
+          "grid size-6 shrink-0 place-items-center rounded-lg border border-transparent transition",
           active ? "border-primary/35 bg-primary/10 text-primary" : "text-muted-foreground",
         )}
       >
-        <Icon className="size-4" />
+        <Icon className="size-3.5" />
       </span>
       {label}
       {badge > 0 ? (
