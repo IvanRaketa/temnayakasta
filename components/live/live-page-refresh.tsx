@@ -3,12 +3,21 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-const LIVE_REFRESH_INTERVAL_MS = 6_000;
+const LIVE_REFRESH_INTERVAL_MS = 3_000;
+const LIVE_REFRESH_PATH_PREFIXES = [
+  "/post/",
+  "/new",
+  "/popular",
+  "/feed/",
+  "/tag/",
+  "/profile/",
+  "/search",
+];
 
 function shouldRefreshPath(pathname: string | null) {
   if (!pathname) return false;
 
-  return pathname === "/" || pathname.startsWith("/post/");
+  return pathname === "/" || LIVE_REFRESH_PATH_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(prefix));
 }
 
 function isUserTyping() {
@@ -42,8 +51,14 @@ export function LivePageRefresh() {
     };
 
     const interval = window.setInterval(refresh, LIVE_REFRESH_INTERVAL_MS);
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", refresh);
 
-    return () => window.clearInterval(interval);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+    };
   }, [pathname, router]);
 
   return null;
