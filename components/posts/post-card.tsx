@@ -114,7 +114,7 @@ export function PostCard({
             <img
               src={thumbnailSrc}
               alt=""
-              className="mx-auto block h-auto max-h-[78svh] w-auto max-w-full object-contain transition duration-300 group-hover:opacity-95 sm:max-h-[620px]"
+              className="mx-auto block h-auto max-h-[78svh] w-auto max-w-full rounded-xl object-contain transition duration-300 group-hover:opacity-95 sm:max-h-[620px] sm:rounded-2xl"
               loading="lazy"
               decoding="async"
             />
