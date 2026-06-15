@@ -90,7 +90,7 @@ export function PostCard({
   return (
     <Card
       className={cn(
-        "post-card-enter group mx-auto w-full max-w-3xl overflow-hidden rounded-2xl tk-hover-lift hover:border-primary/30",
+        "post-card-enter group mx-auto w-full max-w-[42rem] overflow-hidden rounded-2xl tk-hover-lift hover:border-primary/30",
         featured && "tk-pinned-post",
       )}
     >
@@ -107,19 +107,21 @@ export function PostCard({
         <Link
           href={postPath}
           aria-label={`Открыть: ${post.title}`}
-          className="flex justify-center overflow-hidden border-b border-border bg-secondary/60 p-2 sm:p-3"
+          className="block border-b border-border bg-background/20 p-3 sm:p-4"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={thumbnailSrc}
-            alt=""
-            className="h-auto max-h-[340px] w-auto max-w-full object-contain transition duration-300 group-hover:opacity-95 sm:max-h-[420px] lg:max-h-[460px]"
-            loading="lazy"
-            decoding="async"
-          />
+          <span className="block overflow-hidden rounded-2xl border border-border/80 bg-secondary/35">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={thumbnailSrc}
+              alt=""
+              className="mx-auto block h-auto max-h-[78svh] w-auto max-w-full object-contain transition duration-300 group-hover:opacity-95 sm:max-h-[620px]"
+              loading="lazy"
+              decoding="async"
+            />
+          </span>
         </Link>
       ) : null}
-      <CardHeader className="space-y-3 px-4 py-4 sm:px-5 sm:py-5">
+      <CardHeader className="space-y-3 px-4 py-3.5 sm:px-5 sm:py-4">
         <div className="flex min-w-0 gap-3">
           <Link
             href={`/profile/${post.author.username}`}
@@ -162,13 +164,13 @@ export function PostCard({
             </div>
           </div>
         </div>
-        <CardTitle className="break-words text-xl leading-tight sm:text-2xl">
+        <CardTitle className="break-words text-lg leading-tight sm:text-xl">
           <Link href={postPath} className="transition hover:text-primary">
             {post.title}
           </Link>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4 px-4 pb-4 pt-0 sm:px-5 sm:pb-5">
+      <CardContent className="space-y-3.5 px-4 pb-4 pt-0 sm:px-5 sm:pb-5">
         <Link
           href={postPath}
           className="block break-words text-sm leading-6 text-muted-foreground transition hover:text-foreground"
