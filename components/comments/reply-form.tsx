@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import { useFormStatus } from "react-dom";
@@ -36,15 +37,20 @@ interface ReplyFormProps {
 export function ReplyForm({ slug, parentId, onDone }: ReplyFormProps) {
   const [state, formAction] = useActionState(createCommentAction, initialState);
   const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
   const { resetActivity, setTemporaryActivity } = usePresenceActivity();
 
   useEffect(() => {
-    if (state.ok) {
-      formRef.current?.reset();
-      onDone?.();
-      resetActivity();
-    }
-  }, [onDone, resetActivity, state.ok]);
+    if (!state.ok) return;
+
+    formRef.current?.reset();
+    onDone?.();
+    resetActivity();
+    router.refresh();
+
+    const refreshAgain = window.setTimeout(() => router.refresh(), 350);
+    return () => window.clearTimeout(refreshAgain);
+  }, [onDone, resetActivity, router, state.ok]);
 
   return (
     <form
