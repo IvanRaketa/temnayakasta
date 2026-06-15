@@ -127,32 +127,53 @@ async function getStarterHomeFeed(limit: number): Promise<HomeFeedItem[]> {
   return items;
 }
 
-export default async function HomePage() {
-  const current = await getCurrentSessionReadOnly();
-  let recommendations: Awaited<ReturnType<typeof getHomeRecommendations>> = [];
-  let starterFeed: HomeFeedItem[] = [];
-  let stats: Awaited<ReturnType<typeof getHomeStats>> = {
-    online: 0,
-    posts: 0,
-    comments: 0,
-    views: 0,
-  };
-  let databaseError = false;
-
+async function readHomeSession() {
   try {
-    [recommendations, stats] = await Promise.all([
-      getHomeRecommendations(current?.user.id, HOME_POST_LIMIT),
-      getHomeStats(),
-    ]);
-
-    if (recommendations.length === 0) {
-      starterFeed = await getStarterHomeFeed(HOME_POST_LIMIT);
-    }
+    return await getCurrentSessionReadOnly();
   } catch (error) {
-    databaseError = true;
-    console.error(error);
+    console.error("Home session lookup failed.", error);
+    return null;
   }
+}
 
+async function readHomeStats() {
+  try {
+    return await getHomeStats();
+  } catch (error) {
+    console.error("Home stats lookup failed.", error);
+    return {
+      online: 0,
+      posts: 0,
+      comments: 0,
+      views: 0,
+    };
+  }
+}
+
+async function readPersonalRecommendations(userId: string) {
+  try {
+    return await getHomeRecommendations(userId, HOME_POST_LIMIT);
+  } catch (error) {
+    console.error("Home recommendations lookup failed.", error);
+    return [];
+  }
+}
+
+async function readStarterFeed() {
+  try {
+    return await getStarterHomeFeed(HOME_POST_LIMIT);
+  } catch (error) {
+    console.error("Starter home feed lookup failed.", error);
+    return [];
+  }
+}
+
+export default async function HomePage() {
+  const current = await readHomeSession();
+  const statsPromise = readHomeStats();
+  const recommendations = current ? await readPersonalRecommendations(current.user.id) : [];
+  const starterFeed = recommendations.length === 0 ? await readStarterFeed() : [];
+  const stats = await statsPromise;
   const feedItems = recommendations.length > 0 ? recommendations : starterFeed;
   const isPersonalFeed = recommendations.length > 0;
   const primaryCta = current
@@ -229,22 +250,7 @@ export default async function HomePage() {
 
       <AdSlot placement={AdPlacement.HOME_TOP} currentUser={current?.user} />
 
-      {databaseError ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ServerCrash className="size-5 text-primary" />
-              База данных недоступна
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm leading-6 text-muted-foreground">
-              Сейчас не удалось загрузить публикации. Обновите страницу позже или вернитесь в ленту
-              через несколько минут.
-            </p>
-          </CardContent>
-        </Card>
-      ) : feedItems.length > 0 ? (
+      {feedItems.length > 0 ? (
         <section className="space-y-4">
           <div className="w-full md:mx-auto md:max-w-[44rem]">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -272,12 +278,15 @@ export default async function HomePage() {
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>Твоя лента ещё не настроена</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <ServerCrash className="size-5 text-primary" />
+              Главная лента временно недоступна
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm leading-6 text-muted-foreground">
-              Читай посты, открывай интересные темы, ставь реакции и подписывайся на авторов — после
-              этого рекомендации появятся здесь.
+              Сейчас не удалось загрузить стартовую ленту. Разделы «Новое» и «Популярное» могут быть
+              доступны отдельно, а главная обновится после восстановления данных.
             </p>
           </CardContent>
         </Card>
