@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import { useFormStatus } from "react-dom";
@@ -37,14 +38,19 @@ interface CommentFormProps {
 export function CommentForm({ slug, isAuthenticated, isVerified = true }: CommentFormProps) {
   const [state, formAction] = useActionState(createCommentAction, initialState);
   const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
   const { resetActivity, setTemporaryActivity } = usePresenceActivity();
 
   useEffect(() => {
-    if (state.ok) {
-      formRef.current?.reset();
-      resetActivity();
-    }
-  }, [resetActivity, state.ok]);
+    if (!state.ok) return;
+
+    formRef.current?.reset();
+    resetActivity();
+    router.refresh();
+
+    const refreshAgain = window.setTimeout(() => router.refresh(), 350);
+    return () => window.clearTimeout(refreshAgain);
+  }, [resetActivity, router, state.ok]);
 
   if (!isAuthenticated) {
     return (
