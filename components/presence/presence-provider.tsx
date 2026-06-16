@@ -68,6 +68,14 @@ function presencePayload(input: {
   };
 }
 
+function getBaseActivity(scope: PresenceScope, initialActivity: PresenceActivity): PresenceActivity {
+  if (scope === "create" && initialActivity === "creating_post") {
+    return "online";
+  }
+
+  return initialActivity;
+}
+
 export function PresenceProvider({
   scope,
   targetId = null,
@@ -79,9 +87,10 @@ export function PresenceProvider({
   initialActivity: PresenceActivity;
   children: React.ReactNode;
 }) {
+  const baseActivity = getBaseActivity(scope, initialActivity);
   const [snapshot, setSnapshot] = useState<PresenceSnapshot | null>(null);
   const idsRef = useRef<{ visitorId: string; tabId: string } | null>(null);
-  const activityRef = useRef<PresenceActivity>(initialActivity);
+  const activityRef = useRef<PresenceActivity>(baseActivity);
   const temporaryTimerRef = useRef<number | null>(null);
 
   const postActivity = useCallback(
@@ -143,8 +152,8 @@ export function PresenceProvider({
       temporaryTimerRef.current = null;
     }
 
-    setActivity(initialActivity);
-  }, [initialActivity, setActivity]);
+    setActivity(baseActivity);
+  }, [baseActivity, setActivity]);
 
   const setTemporaryActivity = useCallback(
     (activity: PresenceActivity, durationMs = TEMPORARY_ACTIVITY_MS) => {
@@ -154,18 +163,18 @@ export function PresenceProvider({
 
       setActivity(activity);
       temporaryTimerRef.current = window.setTimeout(() => {
-        setActivity(initialActivity);
+        setActivity(baseActivity);
         temporaryTimerRef.current = null;
       }, durationMs);
     },
-    [initialActivity, setActivity],
+    [baseActivity, setActivity],
   );
 
   useEffect(() => {
     const visitorId = getVisitorId();
     const tabId = createId();
     idsRef.current = { visitorId, tabId };
-    activityRef.current = initialActivity;
+    activityRef.current = baseActivity;
 
     const leave = () => {
       postActivity(activityRef.current, "leave");
@@ -182,12 +191,32 @@ export function PresenceProvider({
         leave();
       }
     };
+    const markCreateActivity = (event: Event) => {
+      if (scope !== "create") return;
+
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (!target.closest("textarea,input,[contenteditable='true']")) return;
+
+      if (temporaryTimerRef.current) {
+        window.clearTimeout(temporaryTimerRef.current);
+      }
+
+      activityRef.current = "creating_post";
+      postActivity("creating_post");
+      temporaryTimerRef.current = window.setTimeout(() => {
+        activityRef.current = baseActivity;
+        postActivity(baseActivity);
+        temporaryTimerRef.current = null;
+      }, TEMPORARY_ACTIVITY_MS);
+    };
 
     syncPresence();
     window.addEventListener("pagehide", leave);
     window.addEventListener("beforeunload", leave);
     window.addEventListener("focus", syncPresence);
     document.addEventListener("visibilitychange", syncOnVisibility);
+    document.addEventListener("input", markCreateActivity, true);
 
     const poll = window.setInterval(syncPresence, PRESENCE_POLL_MS);
 
@@ -196,6 +225,7 @@ export function PresenceProvider({
       window.removeEventListener("beforeunload", leave);
       window.removeEventListener("focus", syncPresence);
       document.removeEventListener("visibilitychange", syncOnVisibility);
+      document.removeEventListener("input", markCreateActivity, true);
       window.clearInterval(poll);
 
       if (temporaryTimerRef.current) {
@@ -206,7 +236,7 @@ export function PresenceProvider({
       leave();
       idsRef.current = null;
     };
-  }, [initialActivity, postActivity, scope, targetId]);
+  }, [baseActivity, postActivity, scope, targetId]);
 
   const value = useMemo<PresenceContextValue>(
     () => ({
