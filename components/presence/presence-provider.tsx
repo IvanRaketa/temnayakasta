@@ -13,8 +13,8 @@ import {
 import type { PresenceActivity, PresenceScope, PresenceSnapshot } from "@/lib/presence/store";
 
 const VISITOR_STORAGE_KEY = "temnaya-kasta:presence-visitor";
-const TEMPORARY_ACTIVITY_MS = 8_000;
-const PRESENCE_POLL_MS = 5_000;
+const TEMPORARY_ACTIVITY_MS = 3_000;
+const PRESENCE_POLL_MS = 4_000;
 
 interface PresenceContextValue {
   snapshot: PresenceSnapshot | null;
@@ -115,6 +115,7 @@ export function PresenceProvider({
           "Content-Type": "application/json",
         },
         body,
+        cache: "no-store",
         keepalive: action === "leave",
       })
         .then((response) => (response.ok ? response.json() : null))
@@ -130,10 +131,6 @@ export function PresenceProvider({
 
   const setActivity = useCallback(
     (activity: PresenceActivity) => {
-      if (activityRef.current === activity) {
-        return;
-      }
-
       activityRef.current = activity;
       postActivity(activity);
     },
@@ -170,25 +167,6 @@ export function PresenceProvider({
     idsRef.current = { visitorId, tabId };
     activityRef.current = initialActivity;
 
-    const params = new URLSearchParams({
-      visitorId,
-      tabId,
-      scope,
-      activity: initialActivity,
-    });
-
-    if (targetId) {
-      params.set("targetId", targetId);
-    }
-
-    const source = new EventSource(`/api/presence?${params.toString()}`);
-    const onPresence = (event: MessageEvent<string>) => {
-      try {
-        setSnapshot(JSON.parse(event.data) as PresenceSnapshot);
-      } catch {
-        return;
-      }
-    };
     const leave = () => {
       postActivity(activityRef.current, "leave");
     };
@@ -200,20 +178,22 @@ export function PresenceProvider({
     const syncOnVisibility = () => {
       if (document.visibilityState === "visible") {
         syncPresence();
+      } else {
+        leave();
       }
     };
 
-    source.addEventListener("presence", onPresence);
+    syncPresence();
     window.addEventListener("pagehide", leave);
+    window.addEventListener("beforeunload", leave);
     window.addEventListener("focus", syncPresence);
     document.addEventListener("visibilitychange", syncOnVisibility);
 
     const poll = window.setInterval(syncPresence, PRESENCE_POLL_MS);
 
     return () => {
-      source.removeEventListener("presence", onPresence);
-      source.close();
       window.removeEventListener("pagehide", leave);
+      window.removeEventListener("beforeunload", leave);
       window.removeEventListener("focus", syncPresence);
       document.removeEventListener("visibilitychange", syncOnVisibility);
       window.clearInterval(poll);
