@@ -1,13 +1,18 @@
 import { getCurrentSessionReadOnly } from "@/lib/auth/session-read";
-import { normalizePresenceInput, presenceStore, type PresenceInput } from "@/lib/presence/store";
+import {
+  getPresenceSnapshot,
+  getPresenceStats,
+  leavePresence,
+  upsertPresence,
+} from "@/lib/presence/db-store";
+import { normalizePresenceInput, type PresenceInput } from "@/lib/presence/store";
 import { getClientIp } from "@/lib/request/get-client-ip";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const SSE_HEARTBEAT_MS = 15_000;
-const PRESENCE_GET_LIMIT = 30;
-const PRESENCE_POST_LIMIT = 120;
+const PRESENCE_GET_LIMIT = 120;
+const PRESENCE_POST_LIMIT = 240;
 const PRESENCE_RATE_WINDOW_MS = 60_000;
 
 const globalForPresenceRateLimit = globalThis as unknown as {
@@ -31,10 +36,6 @@ async function getPresenceUserId() {
     console.error("Presence session lookup failed", error);
     return null;
   }
-}
-
-function sseEvent(event: string, data: unknown) {
-  return `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
 }
 
 function rateLimitKey(input: Pick<PresenceInput, "visitorId" | "userId">, request: Request) {
@@ -66,13 +67,13 @@ function checkPresenceRateLimit(key: string, limit: number) {
   return true;
 }
 
-function presenceLimitResponse(input: PresenceInput, status = 429) {
+async function presenceLimitResponse(input: PresenceInput, status = 429) {
   return Response.json(
     {
       ok: false,
       message: "Presence temporarily unavailable.",
-      stats: presenceStore.stats(),
-      snapshot: presenceStore.snapshot(input.scope, input.targetId),
+      stats: await getPresenceStats(),
+      snapshot: await getPresenceSnapshot(input.scope, input.targetId),
     },
     {
       status,
@@ -132,80 +133,16 @@ export async function GET(request: Request) {
     targetId: url.searchParams.get("targetId"),
     activity: url.searchParams.get("activity"),
   });
-  const encoder = new TextEncoder();
-  let cleanup = () => {};
 
   if (!checkPresenceRateLimit(rateLimitKey(input, request), PRESENCE_GET_LIMIT)) {
     return presenceLimitResponse(input);
   }
 
-  if (!presenceStore.upsert(input) || !presenceStore.canSubscribe()) {
-    presenceStore.leave(input);
-    return presenceLimitResponse(input, 503);
-  }
+  await upsertPresence(input);
 
-  const stream = new ReadableStream({
-    start(controller) {
-      let closed = false;
-
-      const send = (event: string, data: unknown) => {
-        if (closed) return;
-
-        try {
-          controller.enqueue(encoder.encode(sseEvent(event, data)));
-        } catch {
-          closed = true;
-        }
-      };
-      const sendSnapshot = () => {
-        send("presence", presenceStore.snapshot(input.scope, input.targetId));
-      };
-      const unsubscribe = presenceStore.subscribe(sendSnapshot);
-      if (!unsubscribe) {
-        presenceStore.leave(input);
-        send("error", { message: "presence_capacity_reached" });
-        closed = true;
-
-        try {
-          controller.close();
-        } catch {
-          return;
-        }
-        return;
-      }
-      const heartbeat = setInterval(() => {
-        presenceStore.touch(input);
-        send("heartbeat", { at: new Date().toISOString() });
-      }, SSE_HEARTBEAT_MS);
-
-      cleanup = () => {
-        if (closed) return;
-        closed = true;
-        clearInterval(heartbeat);
-        unsubscribe();
-        presenceStore.leave(input);
-
-        try {
-          controller.close();
-        } catch {
-          return;
-        }
-      };
-
-      request.signal.addEventListener("abort", cleanup, { once: true });
-      sendSnapshot();
-    },
-    cancel() {
-      cleanup();
-    },
-  });
-
-  return new Response(stream, {
+  return Response.json(await getPresenceSnapshot(input.scope, input.targetId), {
     headers: {
-      "Content-Type": "text/event-stream; charset=utf-8",
-      "Cache-Control": "no-cache, no-transform",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
+      "Cache-Control": "no-store, no-cache, must-revalidate",
     },
   });
 }
@@ -224,10 +161,14 @@ export async function POST(request: Request) {
   }
 
   if (body.action === "leave") {
-    presenceStore.leave(input);
-  } else if (!presenceStore.upsert(input)) {
-    return presenceLimitResponse(input, 503);
+    await leavePresence(input);
+  } else {
+    await upsertPresence(input);
   }
 
-  return Response.json(presenceStore.snapshot(input.scope, input.targetId));
+  return Response.json(await getPresenceSnapshot(input.scope, input.targetId), {
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate",
+    },
+  });
 }
