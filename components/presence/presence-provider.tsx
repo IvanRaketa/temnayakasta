@@ -14,6 +14,7 @@ import type { PresenceActivity, PresenceScope, PresenceSnapshot } from "@/lib/pr
 
 const VISITOR_STORAGE_KEY = "temnaya-kasta:presence-visitor";
 const TEMPORARY_ACTIVITY_MS = 8_000;
+const PRESENCE_POLL_MS = 5_000;
 
 interface PresenceContextValue {
   snapshot: PresenceSnapshot | null;
@@ -191,14 +192,31 @@ export function PresenceProvider({
     const leave = () => {
       postActivity(activityRef.current, "leave");
     };
+    const syncPresence = () => {
+      if (document.visibilityState !== "visible") return;
+
+      postActivity(activityRef.current);
+    };
+    const syncOnVisibility = () => {
+      if (document.visibilityState === "visible") {
+        syncPresence();
+      }
+    };
 
     source.addEventListener("presence", onPresence);
     window.addEventListener("pagehide", leave);
+    window.addEventListener("focus", syncPresence);
+    document.addEventListener("visibilitychange", syncOnVisibility);
+
+    const poll = window.setInterval(syncPresence, PRESENCE_POLL_MS);
 
     return () => {
       source.removeEventListener("presence", onPresence);
       source.close();
       window.removeEventListener("pagehide", leave);
+      window.removeEventListener("focus", syncPresence);
+      document.removeEventListener("visibilitychange", syncOnVisibility);
+      window.clearInterval(poll);
 
       if (temporaryTimerRef.current) {
         window.clearTimeout(temporaryTimerRef.current);
