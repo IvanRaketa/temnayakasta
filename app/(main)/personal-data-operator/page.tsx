@@ -12,7 +12,7 @@ import { projectConfig } from "@/lib/project";
 export const metadata: Metadata = {
   title: { absolute: "Сведения об операторе персональных данных — Тёмная Каста" },
   description:
-    "Сведения об операторе персональных данных сайта Тёмная Каста, доменах и инфраструктуре Vercel и Neon.",
+    "Сведения об операторе персональных данных сайта Тёмная Каста, доменах и self-hosted инфраструктуре.",
   alternates: { canonical: LEGAL_DOCUMENTS.personalDataOperator.href },
 };
 
@@ -29,11 +29,7 @@ export default function PersonalDataOperatorPage() {
         <p>Тип оператора: {operator.type}.</p>
         <p>Адрес оператора: {operator.address}.</p>
         <p>
-          Email для связи:{" "}
-          <a className="text-primary hover:underline" href={`mailto:${operator.email}`}>
-            {operator.email}
-          </a>
-          .
+          Email для связи: {operator.email}.
         </p>
         <p>Телефон для связи: {operator.phone}.</p>
       </LegalSection>
@@ -54,7 +50,7 @@ export default function PersonalDataOperatorPage() {
       </LegalSection>
 
       <LegalSection title={CROSS_BORDER_PROCESSING_NOTICE.title}>
-        <p>Инфраструктурные провайдеры: {CROSS_BORDER_PROCESSING_NOTICE.providers}.</p>
+        <p>Инфраструктура: {CROSS_BORDER_PROCESSING_NOTICE.providers}.</p>
         <p>{CROSS_BORDER_PROCESSING_NOTICE.statement}</p>
         <p>{CROSS_BORDER_PROCESSING_NOTICE.legalReview}</p>
       </LegalSection>
@@ -73,7 +69,7 @@ export default function PersonalDataOperatorPage() {
       <LegalSection title="Публичность сведений">
         <p>
           На сайте публикуются только необходимые публичные данные оператора: ФИО, тип оператора,
-          адрес, email, телефон, домены и общие сведения об используемой облачной инфраструктуре.
+          адрес, email, телефон, домены и общие сведения об используемой инфраструктуре.
         </p>
       </LegalSection>
     </LegalDocument>
