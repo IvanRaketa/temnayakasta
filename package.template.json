@@ -1,0 +1,16 @@
+{
+  "name": "minimarket-24-yandex-games",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MiniMarket 24 — lightweight HTML5 game prototype for Yandex Games.",
+  "type": "module",
+  "scripts": {
+    "start": "npx serve .",
+    "check": "node scripts/check-release.mjs",
+    "zip": "node scripts/make-zip.mjs"
+  },
+  "devDependencies": {
+    "archiver": "^7.0.1",
+    "serve": "^14.2.4"
+  }
+}
