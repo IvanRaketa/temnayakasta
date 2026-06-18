@@ -2,37 +2,30 @@
 
 ## Production baseline
 
-Текущий production размещается на Vercel, а рабочая PostgreSQL-база — в Neon. Cloudflare,
-Cloudflare Tunnel, локальный Windows-хост и порт `3000` не являются текущим публичным production
-контуром.
+Текущий production размещается на self-hosted/домашнем сервере оператора. Рабочая PostgreSQL-база размещается на инфраструктуре оператора. Vercel и Neon не являются текущим production-контуром.
 
-Production-секреты должны храниться только в Vercel environment variables. Строки подключения Neon,
-SMTP-пароли, ключи и токены нельзя коммитить в репозиторий или включать в документацию.
+Production-секреты должны храниться только на сервере. Строки подключения к базе, SMTP-пароли, ключи и токены нельзя коммитить в репозиторий или включать в документацию.
 
-Для production на Vercel используются:
+Для self-hosted production основной публичный адрес: `https://temnayakasta120.ru`. Дополнительный домен `temnayakasta120.online` должен открывать тот же сайт после настройки DNS.
 
-```dotenv
-APP_URL="https://temnayakasta120.online"
-TRUST_PROXY="true"
-ENABLE_HSTS="true"
-```
+Доверие к proxy-заголовкам можно включать только после настройки доверенного reverse proxy. Строгие HTTPS-настройки можно включать только после проверки HTTPS на всех production-доменах.
 
-Значения должны быть сверены с фактическими настройками проекта Vercel. Не следует фиксировать IP
-Vercel или Neon как постоянный: для платформенной инфраструктуры указываются провайдеры и домены.
+Не следует фиксировать приватный IP, домашнюю сеть или внутренние пути в публичной документации. Для публичных материалов используются домены и общее описание инфраструктуры.
 
-## CI and deployment checks
+## Local/server checks
 
-```powershell
-npm run env:check
-npm run lint
-npm run build
-npm run security:audit
-npm run security:audit:high
-npm run security:tools
-```
+Перед реальным запуском production нужно выполнить проверки на сервере вручную:
 
-Эти команды должны выполняться в Vercel/CI после push. Локальный запуск не требуется для
-документарных правок.
+1. установить зависимости;
+2. проверить конфигурацию окружения;
+3. проверить Prisma schema;
+4. сгенерировать Prisma client;
+5. применить миграции;
+6. собрать production build;
+7. запустить production server;
+8. проверить оба домена, авторизацию, регистрацию, почту и юридические страницы.
+
+Документарные правки не требуют запуска сервера.
 
 `npm run security:tools` не сканирует проект сам. Он только показывает, установлены ли optional tools: gitleaks, semgrep, snyk и trivy.
 
@@ -43,7 +36,7 @@ Backups, dumps and project archives must not be placed under `public` and must n
 Recommended policy:
 
 - keep database dumps outside `public` and outside web-served directories;
-- encrypt archives containing `.env`, dumps, user content or logs;
+- encrypt archives containing server configuration, dumps, user content or logs;
 - use retention, for example daily 7 days, weekly 4 weeks, monthly 3 months;
 - test restore into a separate database, never over the live DB without approval;
 - do not delete or move existing real backups without explicit owner approval.
@@ -53,8 +46,8 @@ Recommended policy:
 These require separate approval and infrastructure work:
 
 - проверка HTTPS и редиректов всех публичных доменов на основной canonical-домен;
-- проверка настроек доверенных proxy-заголовков в Vercel;
-- platform/WAF/rate-limit controls, доступные в используемом тарифе Vercel;
-- HSTS enablement;
+- проверка настроек доверенных proxy-заголовков только после подключения reverse proxy;
+- firewall/WAF/rate-limit controls, если они фактически используются;
+- HSTS enablement после полной проверки HTTPS;
 - database cleanup jobs and indexes for long-term view/rate-limit retention;
 - major dependency upgrades.
