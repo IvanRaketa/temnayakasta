@@ -1,0 +1,1 @@
+Temporary access test for yandex-games-minimarket. If this file exists, the GitHub connector can write to this repository.
