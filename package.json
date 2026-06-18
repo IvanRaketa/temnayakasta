@@ -8,7 +8,7 @@
     "dev:webpack": "next dev --webpack",
     "dev:host": "next dev --webpack -H 0.0.0.0",
     "build": "prisma generate && next build --webpack",
-    "start": "next start -H 0.0.0.0 -p 3000",
+    "start": "next start -H 127.0.0.1 -p 3000",
     "clean": "node scripts/clean.mjs",
     "size": "node scripts/size.mjs",
     "env:server-action-key": "node scripts/ensure-server-action-key.mjs",
