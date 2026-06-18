@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#111827" />
+    <title>MiniMarket 24</title>
+    <link rel="stylesheet" href="src/styles.css" />
+    <script src="/sdk.js"></script>
+  </head>
+  <body>
+    <main class="app" id="app">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow">Yandex Games MVP</p>
+          <h1>MiniMarket 24</h1>
+        </div>
+        <button class="ghost-button" id="resetButton" type="button">Сброс</button>
+      </section>
+
+      <section class="stats-card" aria-label="Статистика магазина">
+        <div>
+          <span>Деньги</span>
+          <strong id="moneyValue">0 ₽</strong>
+        </div>
+        <div>
+          <span>Репутация</span>
+          <strong id="reputationValue">1</strong>
+        </div>
+        <div>
+          <span>День</span>
+          <strong id="dayValue">1</strong>
+        </div>
+      </section>
+
+      <section class="store-card">
+        <div class="store-header">
+          <div>
+            <h2>Торговый зал</h2>
+            <p id="statusText">Разложи товар и обслужи первых покупателей.</p>
+          </div>
+          <span class="level-pill" id="levelValue">Уровень 1</span>
+        </div>
+
+        <div class="store-scene" id="storeScene" aria-label="Игровая зона магазина">
+          <div class="shelf shelf-one" id="shelfOne"><span>Вода</span></div>
+          <div class="shelf shelf-two locked" id="shelfTwo"><span>Снеки</span></div>
+          <div class="shelf shelf-three locked" id="shelfThree"><span>Фрукты</span></div>
+          <div class="counter"><span>Касса</span></div>
+          <div class="customer" id="customer">🙂</div>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Заказы до следующего дня</span>
+            <strong id="ordersProgressText">0/8</strong>
+          </div>
+          <div class="progress-bar" aria-hidden="true"><span id="ordersProgressBar"></span></div>
+        </div>
+      </section>
+
+      <section class="actions-grid" aria-label="Основные действия">
+        <button class="primary-action" id="serveButton" type="button">
+          <strong>Обслужить покупателя</strong>
+          <span id="serveIncomeText">+10 ₽</span>
+        </button>
+        <button class="secondary-action" id="stockButton" type="button">
+          <strong>Разложить товар</strong>
+          <span id="stockText">Осталось: 5</span>
+        </button>
+      </section>
+
+      <section class="upgrades-card" aria-label="Улучшения">
+        <div class="section-title">
+          <h2>Улучшения</h2>
+          <p>Прокачивай магазин, чтобы прибыль росла быстрее.</p>
+        </div>
+        <div class="upgrade-list" id="upgradeList"></div>
+      </section>
+
+      <section class="mission-card" aria-label="Цели игры">
+        <h2>Цель первой версии</h2>
+        <p id="missionText">Доведи магазин до 6 уровня и открой все отделы.</p>
+      </section>
+    </main>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
